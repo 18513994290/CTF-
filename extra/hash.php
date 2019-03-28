@@ -1,5 +1,4 @@
 <?php
-
 $options = [
   'cost' => 12,
 ];

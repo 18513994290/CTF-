@@ -43,7 +43,7 @@ class IndexController extends Controller {
     if ($custom_org->getValue() === 'Facebook') {
       $welcome_msg =
         tr(
-          'Welcome to the Facebook Capture the Flag Competition. By clicking "Play," you will be entered into the official CTF challenge. Good luck in your conquest.',
+          'hi  Welcome to the Facebook Capture the Flag Competition. By clicking "Play," you will be entered into the official CTF challenge. Good luck in your conquest.',
         );
     } else {
       $welcome_msg =

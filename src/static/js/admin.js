@@ -62,7 +62,7 @@ function resetDatabase() {
   };
   sendAdminRequest(reset_database, true);
 }
-
+alert(444)
 /**
  * submits an ajax request to the admin endpoint
  *
@@ -84,6 +84,8 @@ function sendAdminRequest(request_data: any, refresh_page) {
   ).fail(function() {
     // TODO: Make this a modal
     console.log('ERROR');
+    console.log(request_data);
+   
   }).done(function(data) {
     var responseData = JSON.parse(data);
     if (responseData.result == 'OK') {
@@ -279,7 +281,6 @@ function createAttachment(section) {
     formData.append('level_id', level_id);
     formData.append('filename', filename);
     formData.append('csrf_token', csrf_token);
-
     $.ajax({
       url: 'index.php?p=admin&ajax=true',
       type: 'POST',
@@ -707,6 +708,7 @@ function createFlagLevel(section) {
   var entity_id = $('.level_form select[name=entity_id] option:selected', section)[0].value;
   var category_id = $('.level_form select[name=category_id] option:selected', section)[0].value;
   var points = $('.level_form input[name=points]', section)[0].value;
+  var weight = $('.level_form input[name=weight]', section)[0].value;
   var hint = $('.level_form input[name=hint]', section)[0].value;
   var penalty = $('.level_form input[name=penalty]', section)[0].value;
 
@@ -718,6 +720,7 @@ function createFlagLevel(section) {
     entity_id: entity_id,
     category_id: category_id,
     points: points,
+    weight:weight,
     hint: hint,
     penalty: penalty
   };
@@ -802,6 +805,7 @@ function updateFlagLevel(section) {
   var entity_id = $('.level_form select[name=entity_id] option:selected', section)[0].value;
   var category_id = $('.level_form select[name=category_id] option:selected', section)[0].value;
   var points = $('.level_form input[name=points]', section)[0].value;
+  var weight = $('.level_form input[name=weight]', section)[0].value;
   var bonus = $('.level_form input[name=bonus]', section)[0].value;
   var bonus_dec = $('.level_form input[name=bonus_dec]', section)[0].value;
   var hint = $('.level_form input[name=hint]', section)[0].value;
@@ -816,12 +820,14 @@ function updateFlagLevel(section) {
     entity_id: entity_id,
     category_id: category_id,
     points: points,
+    weight: weight,
     bonus: bonus,
     bonus_dec: bonus_dec,
     hint: hint,
     penalty: penalty,
     level_id: level_id
   };
+  console.log(update_data)
   sendAdminRequest(update_data, false);
 }
 

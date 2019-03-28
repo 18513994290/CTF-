@@ -1,5 +1,4 @@
 <?hh // strict
-
 class ViewModeController extends Controller {
   <<__Override>>
   protected function getTitle(): string {

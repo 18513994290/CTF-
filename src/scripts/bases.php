@@ -1,5 +1,4 @@
 <?hh
-
 if (php_sapi_name() !== 'cli') {
   http_response_code(405); // method not allowed
   exit(0);

@@ -1,0 +1,248 @@
+ <?hh // strict
+ /*
+ *created by PhpStorm.
+ * User: yangyang
+ * Date: 2019-03-20
+ * Time: 15:18
+ */
+
+class Batch extends Model {
+
+protected static string $MC_KEY = 'batch:';
+
+protected static Map<string, string>
+ $MC_KEYS = Map {
+      'ALL_BATCHS' => 'all_batchs',
+      'ALL_BATCHS_BY_ID' => 'all_batch_by_id',
+      'ALL_BATCHS_FOR_MAP' => 'all_batchs_for_map',
+      'ALL_ENABLED_BATCHS' => 'all_enabled_batchs',
+      'ALL_ENABLED_BATCHS_FOR_MAP' => 'all_enabled_batchs_for_map',
+    };
+  private function __construct(
+    private int $id,
+    private string $batch_number,
+    private string  $start_ts,
+    private string  $end_ts,
+    private int  $enabled,
+    private string $create_ts,
+
+  ) {}
+
+  public function getId(): int {
+    return $this->id;
+}
+
+
+  public function getEnabled(): bool {
+    return $this->enabled === 1;
+}
+
+  public function getBatchnumber(): string {
+       return mb_convert_encoding($this->batch_number, 'UTF-8');
+  }
+
+  public function getStartTs(): string {
+    return $this->start_ts;
+  }
+  public function getEndTs(): string {
+    return $this->end_ts;
+  }
+  public function getCreatTs(): string {
+    return $this->create_ts;
+  }
+   private static function BatchFromRow(Map<string, string> $row): Batch {
+    return new Batch(
+      intval(must_have_idx($row, 'id')),
+      must_have_idx($row, 'start_ts'),
+      must_have_idx($row, 'end_ts'),
+      intval(must_have_idx($row, 'enabled')),
+      must_have_idx($row, 'create_ts'),
+    );
+  }
+  
+  // Enable or disable a batchs
+  public static async function genSetStatus(
+    int $batch_id,
+    bool $status,
+  ): Awaitable<void> {
+    $db = await self::genDb();
+    await $db->queryf(
+      'UPDATE batchs SET enabled = %d WHERE id = %d',
+      $status ? 1 : 0,
+      $batch_id,
+    );
+    self::invalidateMCRecords();
+  } 
+   //删除
+   public static async function genDelete(
+    int $batch_id,
+  ): Awaitable<void> {
+    $db = await self::genDb();
+    await $db->queryf(
+      'DELETE FROM batchs WHERE id = %d LIMIT 1',
+      $batch_id,
+    );
+
+    self::invalidateMCRecords(); // Invalidate Memcached Announcement data.
+  }
+  //获取所有	
+  private static async function genAll(
+    string $sql,
+  ): Awaitable<array<Batch>> {
+    $db = await self::genDb();
+    $all_batchs = Map {};
+    $db_result = await $db->query($sql);
+    $rows = $db_result->mapRows();
+
+    foreach ($rows as $row) {
+      $all_batchs->add(
+        Pair {intval($row->get('id')), self::BatchFromRow($row)},
+      );
+    }
+
+    $batchs = array();
+    $batchs = $all_batchs->toValuesArray();
+
+    usort(
+      $batchs,
+      function($a, $b) {
+        return strcmp($a->name, $b->name);
+      },
+    );
+
+    return $batchs;
+  }  
+ //获取所有MC中batch 
+  public static async function genAllBatchs(
+    bool $refresh = false,
+  ): Awaitable<array<Batch>> {
+    $mc_result = self::getMCRecords('ALL_BATCHS');
+    if (!$mc_result || count($mc_result) === 0 || $refresh) {
+      $all_batchs =
+        await self::genAll('SELECT * FROM batchs ORDER BY id DESC ');
+      self::setMCRecords('ALL_BATCHS', $all_batchs);
+      return $all_batchs;
+    } else
+      invariant(
+        is_array($mc_result),
+        'cache return should be an array of Batch',
+      );
+      return $mc_result;
+    }
+  }
+  //获取所有可用的BATCHS
+  public static async function genAllEnabledBatchs(
+    bool $refresh = false,
+  ): Awaitable<array<Batch>> {
+    $mc_result = self::getMCRecords('ALL_ENABLED_BATCHS');
+    if (!$mc_result || count($mc_result) === 0 || $refresh) {
+      $all_batchs =
+        await self::genAll('SELECT * FROM batchs WHERE enabled = 1');
+      self::setMCRecords('ALL_ENABLED_BATCHS', $all_batchs);
+      return $all_batchs;
+    } else {
+      invariant(
+        is_array($mc_result),
+        'cache return should be an array of Country',
+      );
+      return $mc_result;
+    }
+  }
+//tch_number,start_ts,end_ts,create_ts	
+//TODO BATC
+  public static async function genCreate(
+    string $batch_number,
+    string $start_ts,
+    string $end_ts,
+  ): Awaitable<void> {
+   /**
+    $db = await self::genDb();
+    await $db->queryf(
+      'INSERT INTO batchs (batch_number,start_ts,end_ts,create_ts) (%s,%s,%s,SELECT NOW()) LIMIT 1',
+      $batch_number,
+      $start_ts,
+      $end_ts,
+    );
+    
+    self::invalidateMCRecords(); // Invalidate Memcached Batch data.
+   */
+   }
+  
+
+    // Get a country by id.
+  public static async function gen(
+    int $batch_id,
+    bool $refresh = false,
+  ): Awaitable<Batch> {
+    $mc_result = self::getMCRecords('ALL_BATCHS_BY_ID');
+    if (!$mc_result || count($mc_result) === 0 || $refresh) {
+      $db = await self::genDb();
+      $all_batchs = Map {};
+      $result = await $db->queryf('SELECT * FROM batchs ORDER BY id');
+      foreach ($result->mapRows() as $row) {
+        $all_batchs->add(
+          Pair {intval($row->get('id')), self::BatchFromRow($row)},
+        );
+      }
+      self::setMCRecords('ALL_BATCHS_BY_ID', $all_batchs);
+      invariant(
+        $all_batchs->contains($batch_id) !== false,
+        'batch not found',
+      );
+      $batch = $all_batchs->get($batch_id);
+      invariant(
+        $batch instanceof Batch,
+        'batch should be of type Batch',
+      );
+      return $batch;
+    } else {
+      invariant(
+        $mc_result instanceof Map,
+        'cache return should be a Map of Batch by Id',
+      );
+      invariant(
+        $mc_result->contains($batch_id) !== false,
+        'batch not found',
+      );
+      $batch = $mc_result->get($batch_id);
+      invariant(
+        $batch instanceof Batch,
+        'batch should be of type Batch',
+      );
+      return $batch;
+    }
+  }
+   // Get category by name.
+  public static async function genSingleBatchByName(
+    string $batch_number,
+  ): Awaitable<Batch> {
+    $db = await self::genDb();
+    $result = await $db->queryf(
+      'SELECT * FROM batchs  WHERE batch_number = %s LIMIT 1',
+      $batch_number,
+    );
+
+    invariant($result->numRows() === 1, 'Expected exactly one result');
+    $batch_number = self::BatchFromRow($result->mapRows()[0]);
+    return $batch_number;
+  }
+  // Check if a category is already created.
+  public static async function genCheckExists(
+        string $batch_number,
+      ): Awaitable<bool> {
+        $db = await self::genDb();
+    
+        $result = await $db->queryf(
+          'SELECT COUNT(*) FROM batchs WHERE batch_number = %s',
+          $category,
+        );
+    
+        if ($result->numRows() > 0) {
+          invariant($result->numRows() === 1, 'Expected exactly one result');
+          return (intval(idx($result->mapRows()[0], 'COUNT(*)')) > 0);
+        } else {
+          return false;
+        }
+      }
+
+}

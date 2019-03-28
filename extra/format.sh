@@ -10,7 +10,8 @@
 # Optional Parameters:
 #   PATH                  Path to fbctf code.
 
-SRC_LOCATION="/vagrant/src"
+#SRC_LOCATION="/vagrant/src"
+SRC_LOCATION="/var/www/fbctf/src"
 IGNORE_FILES=("language/language.php")
 
 function usage() {

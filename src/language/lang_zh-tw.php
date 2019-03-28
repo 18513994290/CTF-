@@ -12,7 +12,7 @@ $translations = array(
   'Play' =>
     '開始',
   'Welcome to the Facebook Capture the Flag Competition. By clicking "Play," you will be entered into the official CTF challenge. Good luck in your conquest.' =>
-    '歡迎來到 Facebook Capture the Flag 競賽。立刻點擊 "開始" 進入正式的 CTF 挑戰。祝征途愉快。',
+    '呵呵 歡迎來到 Facebook Capture the Flag 競賽。立刻點擊 "開始" 進入正式的 CTF 挑戰。祝征途愉快。',
   'Get ready for the CTF to start and access the gameboard now!' =>
     '立即查看遊戲版圖並準備開始進行 CTF！',
   'Gameboard' =>
@@ -23,7 +23,47 @@ $translations = array(
     '立即註冊隊伍並準備開始進行 CTF！',
   'Login' =>
     '登入',
-  'Soon' =>
+  'switch' =>
+  '开关',
+  'Examination'=>
+  '考试',
+  'Batch'=>
+  '批次',
+  'All Batchs'=>
+   '所有批次',
+  'Batchs  Controls'=>
+  '批次管理',
+  'Examination Batch'=>
+   '考试批次',
+   'Add Examination Batch'=>
+  '添加考试批次',
+  'Batch Number'=>
+  '批号',
+  'Add Batch'=>
+   '添加批号關卡',
+  'Start Year'=>
+  '开始年份',
+  'End Year'=>
+  '结束年份',
+ 'Start Time'=>
+  '开始时间',
+ 'End Time'=>
+  '结束时间',
+  'Month'=>
+   '月份',
+  'Day'=>
+  '日期',
+  'Minute'=>
+  '分钟', 
+  'Weight' =>
+     '权重',
+   'Fill in the blanks'=>
+   '填空题',
+   'Essay question'=>
+    '问答题',
+   'Choice question'=>
+   '选择题',
+   'Soon' =>
     '即將',
   'Upcoming Game' =>
     '待進行',
@@ -331,6 +371,8 @@ $translations = array(
     '增加測驗型關卡',
   'New Flag Level' =>
     '新增 Flag 型關卡',
+  'New Fill in the blanks Level'=>
+  '新增填空型關卡',
   'Description' =>
     '敘述',
   'Level description' =>
@@ -343,6 +385,8 @@ $translations = array(
     '旗標',
   'All Flag Levels' =>
     '所有旗標型關卡',
+  'All Fill in the blanks Levels'=>
+  '所有填空型關卡',
   'New Attachment:' =>
     '新增附件：',
   'Attachment' =>
@@ -353,6 +397,8 @@ $translations = array(
     '新增連結：',
   'Flag Level' =>
     '旗標關卡',
+  'Fill in the blanks Level'=>
+  '填空關卡',
   'Categories' =>
     '所有類別',
   '+ Attachment' =>
@@ -363,6 +409,8 @@ $translations = array(
     '旗標管理',
   'Add Flag Level' =>
     '增加旗標型關卡',
+  'Add Fill in the blanks Level' =>
+    '增加填空型關卡',
   'New Base Level' =>
     '新增基地關卡',
   'Keep Points' =>

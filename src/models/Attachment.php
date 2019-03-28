@@ -507,4 +507,67 @@ class Attachment extends Model {
       must_have_idx($row, 'type'),
     );
   }
+
+  /**=========================================以下都是batch models*/ 
+
+     //create batchs
+   public static async function genBatchCreate(
+         string $batch_number,
+         string $start_ts,
+         string $end_ts,
+        ): Awaitable<void> {
+        $db = await self::genDb();
+         await $db->queryf('INSERT INTO batchs (create_ts,start_ts,end_ts,batch_number) VALUES (NOW(),%s,%s,%s)',
+        	$start_ts,
+        	$end_ts,
+        	$batch_number,
+        );
+    self::invalidateMCRecords(); // Invalidate Memcached ActivityLog data.
+  }
+        // All batchs.
+  public static async function genAllBatchs(
+    bool $refresh = false,
+  ): Awaitable<array<Attachment>> {
+    $mc_result = self::getMCRecords('ALL_BATCHS');
+    if (!$mc_result || count($mc_result) === 0 || $refresh) {
+      $db = await self::genDb();
+      $all_batchs = Map {};
+      $result = await $db->queryf('SELECT * FROM batchs ORDER BY id');
+      foreach ($result->mapRows() as $row) {
+          $all_batchs->add(
+              Pair {intval($row->get('id')), self::BatchFromRow($row)},
+        );
+      }
+      self::setMCRecords('ALL_BATCHS', new Map($all_batchs));
+      $batchs = array();
+      $batchs = $all_batchs->toValuesArray();
+      return $batchs;
+    } else {
+        $batchs = array();
+        invariant(
+            $mc_result instanceof Map,
+            'cache return should be of type Map',
+      );
+        $batchs = $mc_result->toValuesArray();
+        return $batchs;
+        }
+    }	
+  
+  //BatchFromRow
+  //form
+    private static function BatchFromRow(
+        Map<string, string> $row,
+        ): Attachment{
+        return new Attachment(
+            intval(must_have_idx($row, 'id')),
+            intval(must_have_idx($row, 'batch_number')),
+            must_have_idx($row, 'start_ts'),
+            must_have_idx($row, 'end_ts'),
+            must_have_idx($row, 'create_ts'),
+        );
+    }
+ //limit 1
+ 	
+
+
 }

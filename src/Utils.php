@@ -139,5 +139,19 @@ class Utils {
     string $redirect,
   ): string {
     return self::request_response('ERROR', $msg, $redirect);
+  } 
+  
+  //错误日志
+  public static function error_log(string $msg){
+  try{
+       $msg;
+  }catch(Exception $e){
+	//error message
+  	$errorMsg = 'Error on line '.$e->getLine().' in '.$e->getFile().'Message:'.$e->getMessage();
+        $file="/var/www/fbctf/src/log.txt";
+       file_put_contents($file,$errorMsg,'a');
   }
+
+  }
+
 }

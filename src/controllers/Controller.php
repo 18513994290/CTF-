@@ -1,5 +1,4 @@
 <?hh // strict
-
 abstract class Controller {
   abstract protected function getTitle(): string;
   abstract protected function getFilters(): array<string, mixed>;
