@@ -4362,10 +4362,11 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         invariant($level instanceof Level, 'level should be of type Level');
 
         $country = await Country::gen($level->getEntityId()); // TODO: Combine Awaits
-
+        //$country=Category::genSingleCategory($level->getCategoryId());
         $team_name = $team->getName();
 
         $level_str =
+          //$country->getCategory().
           $country->getName().
           ' - '.
           $level->getTitle().

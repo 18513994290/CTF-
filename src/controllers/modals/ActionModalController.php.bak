@@ -394,14 +394,13 @@ class ActionModalController extends ModalController {
                 {$google_oauth_content}
               </div>
             </div>
-           <!--
             <p>
               {tr(
                 'Setup your FBCTF Live Sync credentials.  These credentials must be the SAME on all other FBCTF instances that you are linking.  DO NOT use your account password.',
               )}
-            </p>-->
+            </p>
             <br />
-            <!--
+            /**
             <form class="fb-form-no-padding account-link-form">
               <input name="set_livesync_password" type="hidden" value="" />
               <div class="form-el el--text">
@@ -430,7 +429,7 @@ class ActionModalController extends ModalController {
               </div>
               <span class="account-link-form-response highlighted--blue">
               </span>
-            </form>*/-->
+            </form>*/
             <div class="action-actionable">
               <a href="#" class="fb-cta cta--red js-close-modal">
                 {tr('Close')}

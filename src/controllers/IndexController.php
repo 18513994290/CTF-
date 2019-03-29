@@ -118,6 +118,7 @@ class IndexController extends Controller {
           </div>
         </form>;
     }
+    //TODO 倒计时
     list($config_game, $config_next_game) = await \HH\Asio\va(
       Configuration::gen('game'),
       Configuration::gen('next_game'),
