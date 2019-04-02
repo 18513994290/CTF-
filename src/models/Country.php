@@ -1,9 +1,6 @@
 <?hh // strict
-
 class Country extends Model {
-
   protected static string $MC_KEY = 'country:';
-
   protected static Map<string, string>
     $MC_KEYS = Map {
       'ALL_COUNTRIES' => 'all_countries',
@@ -13,7 +10,6 @@ class Country extends Model {
       'ALL_ENABLED_COUNTRIES_FOR_MAP' => 'all_enabled_countries_for_map',
       'ALL_AVAILABLE_COUNTRIES' => 'ALL_AVAILABLE_COUNTRIES',
     };
-
   private function __construct(
     private int $id,
     private string $iso_code,
@@ -23,35 +19,27 @@ class Country extends Model {
     private string $d,
     private string $transform,
   ) {}
-
   public function getId(): int {
     return $this->id;
   }
-
   public function getIsoCode(): string {
     return $this->iso_code;
   }
-
   public function getName(): string {
     return $this->name;
   }
-
   public function getUsed(): bool {
     return $this->used === 1;
   }
-
   public function getEnabled(): bool {
     return $this->enabled === 1;
   }
-
   public function getD(): string {
     return $this->d;
   }
-
   public function getTransform(): string {
     return $this->transform;
   }
-
   // Make sure all the countries used field is good
   public static async function genUsedAdjust(): Awaitable<void> {
     $db = await self::genDb();
@@ -62,7 +50,6 @@ class Country extends Model {
     await $db->multiQuery($queries);
     self::invalidateMCRecords();
   }
-
   // Enable or disable a country
   public static async function genSetStatus(
     int $country_id,
@@ -76,7 +63,6 @@ class Country extends Model {
     );
     self::invalidateMCRecords();
   }
-
   // Set the used flag for a country
   public static async function genSetUsed(
     int $country_id,
@@ -90,7 +76,6 @@ class Country extends Model {
     );
     self::invalidateMCRecords();
   }
-
   private static async function genAll(
     string $sql,
   ): Awaitable<array<Country>> {
@@ -98,26 +83,21 @@ class Country extends Model {
     $all_countries = Map {};
     $db_result = await $db->query($sql);
     $rows = $db_result->mapRows();
-
     foreach ($rows as $row) {
       $all_countries->add(
         Pair {intval($row->get('id')), self::countryFromRow($row)},
       );
     }
-
     $countries = array();
     $countries = $all_countries->toValuesArray();
-
     usort(
       $countries,
       function($a, $b) {
         return strcmp($a->name, $b->name);
       },
     );
-
     return $countries;
   }
-
   public static async function genAllCountries(
     bool $refresh = false,
   ): Awaitable<array<Country>> {
@@ -135,7 +115,6 @@ class Country extends Model {
       return $mc_result;
     }
   }
-
   public static async function genAllCountriesForMap(
     bool $refresh = false,
   ): Awaitable<array<Country>> {
@@ -153,7 +132,6 @@ class Country extends Model {
       return $mc_result;
     }
   }
-
   public static async function genAllEnabledCountries(
     bool $refresh = false,
   ): Awaitable<array<Country>> {
@@ -171,7 +149,6 @@ class Country extends Model {
       return $mc_result;
     }
   }
-
   // All enabled countries. The weird sorting is because SVG lack of z-index
   // and things looking like shit in the map. See issue #20.
   public static async function genAllEnabledCountriesForMap(
@@ -192,7 +169,6 @@ class Country extends Model {
       return $mc_result;
     }
   }
-
   // All enabled and unused countries
   public static async function genAllAvailableCountries(
     bool $refresh = false,
@@ -212,14 +188,12 @@ class Country extends Model {
       return $mc_result;
     }
   }
-
   // Check if country is in an active level
   public static async function genIsActiveLevel(
     int $country_id,
   ): Awaitable<bool> {
     return Level::genWhoUses($country_id) !== null;
   }
-
   // Get a country by id.
   public static async function gen(
     int $country_id,
@@ -263,7 +237,6 @@ class Country extends Model {
       return $country;
     }
   }
-
   // Get a country by iso_code.
   public static async function genCountry(
     string $country,
@@ -273,24 +246,19 @@ class Country extends Model {
       'SELECT * FROM countries WHERE iso_code = %s LIMIT 1',
       $country,
     );
-
     invariant($result->numRows() === 1, 'Expected exactly one result');
     return self::countryFromRow($result->mapRows()[0]);
   }
-
   // Get a random enabled, unused country ID
   public static async function genRandomAvailableCountryId(): Awaitable<int> {
     $db = await self::genDb();
-
     $result =
       await $db->queryf(
         'SELECT id FROM countries WHERE enabled = 1 AND used = 0 ORDER BY RAND() LIMIT 1',
       );
-
     invariant($result->numRows() === 1, 'Expected exactly one result');
     return intval(firstx($result->mapRows())['id']);
   }
-
   private static function countryFromRow(Map<string, string> $row): Country {
     $config = \HH\Asio\join(Configuration::gen('language'));
     $language = $config->getValue();
@@ -308,18 +276,15 @@ class Country extends Model {
       must_have_idx($row, 'transform'),
     );
   }
-
   // Check if a country already exists, by iso_code
   public static async function genCheckExists(
     string $country,
   ): Awaitable<bool> {
     $db = await self::genDb();
-
     $result = await $db->queryf(
       'SELECT COUNT(*) FROM countries WHERE iso_code = %s',
       $country,
     );
-
     if ($result->numRows() > 0) {
       invariant($result->numRows() === 1, 'Expected exactly one result');
       return (intval(idx($result->mapRows()[0], 'COUNT(*)')) > 0);
@@ -327,18 +292,15 @@ class Country extends Model {
       return false;
     }
   }
-
   // Check if a country already exists, by id
   public static async function genCheckExistsById(
     int $entity_id,
   ): Awaitable<bool> {
     $db = await self::genDb();
-
     $result = await $db->queryf(
       'SELECT COUNT(*) FROM countries WHERE id = %d',
       $entity_id,
     );
-
     if ($result->numRows() > 0) {
       invariant($result->numRows() === 1, 'Expected exactly one result');
       return (intval(idx($result->mapRows()[0], 'COUNT(*)')) > 0);
@@ -346,5 +308,4 @@ class Country extends Model {
       return false;
     }
   }
-
 }

@@ -16,6 +16,7 @@ class Batch extends Modal{
         private string  $start_ts,
         private string  $end_ts,
         private int  $enabled,
+        private int  $status,
         private string $create_ts,
 
       ) {}
@@ -37,8 +38,11 @@ class Batch extends Modal{
       public function getEndTs(): string {
         return $this->end_ts;
     }
-      public function getCreatTs(): string {
+    public function getCreatTs(): string {
         return $this->create_ts;
+    }
+    public function getStatus(): string {
+        return $this->status;
     }
      //get all batch
 

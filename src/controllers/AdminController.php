@@ -5,7 +5,6 @@ class AdminController extends Controller {
     $custom_org = \HH\Asio\join(Configuration::gen('custom_org'));
     return tr($custom_org->getValue()).' '.tr('CTF').' | '.tr('Admin');
   }
-
   <<__Override>>
   protected function getFilters(): array<string, mixed> {
     return array(
@@ -17,7 +16,6 @@ class AdminController extends Controller {
       ),
     );
   }
-
   <<__Override>>
   protected function getPages(): array<string> {
     return array(
@@ -29,58 +27,19 @@ class AdminController extends Controller {
       'flags',
       'bases',
       'categories',
-      //'countries',
+      'countries',
       'teams',
       'logos',
       'sessions',
       'scoreboard',
       'logs',
-      'batchs',
     );
   }
-//add
-  private async function genGenerateBatchsSelect(
-    int $selected,
-  ): Awaitable<:xhp> {
-  
- 
-  $select =
-      <select class="not_configuration" name="batch_id" disabled={true} />;
-
-    if ($selected === 0) {
-      $select->appendChild(
-        <option value="0" selected={true}>{tr('Auto')}</option>,
-      );
-    } else {
-      $batch = await Batch::gen(intval($selected));
-      $select->appendChild(
-        <option value={strval($batch->getId())} selected={true}>
-          {$batch->getBatchNumber()}
-        </option>,
-      );
-    }
-   
-    $batchs = await Batch::genAllBatchs();
-   
-    foreach ($batchs as $batch) {
-      $select->appendChild(
-        <option value={strval($batch->getId())}>
-          {$batch->getBatchNumber()}
-        </option>,
-      );
-    }
-    return $select;
-  }
-//end 
-
-
-	
   private async function genGenerateCountriesSelect(
     int $selected,
   ): Awaitable<:xhp> {
     $select =
       <select class="not_configuration" name="entity_id" disabled={true} />;
-
     if ($selected === 0) {
       $select->appendChild(
         <option value="0" selected={true}>{tr('Auto')}</option>,
@@ -93,7 +52,6 @@ class AdminController extends Controller {
         </option>,
       );
     }
-
     $countries = await Country::genAllAvailableCountries();
     foreach ($countries as $country) {
       $select->appendChild(
@@ -102,22 +60,18 @@ class AdminController extends Controller {
         </option>,
       );
     }
-
     return $select;
   }
-
   private async function genGenerateLevelCategoriesSelect(
     int $selected,
   ): Awaitable<:xhp> {
     $categories = await Category::genAllCategories();
     $select =
       <select class="not_configuration" name="category_id" disabled={true} />;
-
     foreach ($categories as $category) {
       if ($category->getCategory() === 'Quiz') {
         continue;
       }
-
       if ($category->getId() === $selected) {
         $select->appendChild(
           <option
@@ -135,14 +89,11 @@ class AdminController extends Controller {
         );
       }
     }
-
     return $select;
   }
-
   private async function genGenerateFilterCategoriesSelect(): Awaitable<:xhp> {
     $categories = await Category::genAllCategories();
     $select = <select class="not_configuration" name="category_filter" />;
-
     $select->appendChild(
       <option class="filter_option" value="all" selected={true}>
         {tr('All Categories')}
@@ -158,10 +109,8 @@ class AdminController extends Controller {
         </option>
       );
     }
-
     return $select;
   }
-
   private async function genRegistrationTypeSelect(): Awaitable<:xhp> {
     $config = await Configuration::gen('registration_type');
     $type = $config->getValue();
@@ -182,10 +131,8 @@ class AdminController extends Controller {
         {tr('Tokenized')}
       </option>,
     );
-
     return $select;
   }
-
   // TODO: Translate password types
   private async function genStrongPasswordsSelect(): Awaitable<:xhp> {
     list($types, $config) = await \HH\Asio\va(
@@ -203,10 +150,8 @@ class AdminController extends Controller {
         </option>
       );
     }
-
     return $select;
   }
-
   private async function genConfigurationDurationSelect(): Awaitable<:xhp> {
     list($config_duration_unit, $config_duration_value) = await \HH\Asio\va(
       Configuration::gen('game_duration_unit'),
@@ -214,11 +159,9 @@ class AdminController extends Controller {
     );
     $duration_unit = $config_duration_unit->getValue();
     $duration_value = $config_duration_value->getValue();
-
     $minute_selected = $duration_unit === 'm';
     $hour_selected = $duration_unit === 'h';
     $day_selected = $duration_unit === 'd';
-
     return
       <div class="fb-column-container">
         <div class="col col-1-2">
@@ -252,7 +195,6 @@ class AdminController extends Controller {
         </div>
       </div>;
   }
-
   private async function genLanguageSelect(): Awaitable<:xhp> {
     $config = await Configuration::gen('language');
     $current_lang = $config->getValue();
@@ -278,7 +220,6 @@ class AdminController extends Controller {
     }
     return $select;
   }
-
   public async function genRenderConfigurationTokens(): Awaitable<:xhp> {
     $tokens_table = <table></table>;
     $tokens = await Token::genAllTokens();
@@ -300,7 +241,6 @@ class AdminController extends Controller {
         </tr>
       );
     }
-
     return
       <div class="radio-tab-content" data-tab="reg_tokens">
         <div class="admin-sections">
@@ -329,7 +269,6 @@ class AdminController extends Controller {
         </div>
       </div>;
   }
-
   public async function genRenderConfigurationContent(): Awaitable<:xhp> {
     $awaitables = Map {
       'game' => Configuration::gen('game'),
@@ -369,9 +308,7 @@ class AdminController extends Controller {
       'custom_byline' => Configuration::gen('custom_byline'),
       'custom_logo_image' => Configuration::gen('custom_logo_image'),
     };
-
     $results = await \HH\Asio\m($awaitables);
-
     $game = $results['game'];
     $registration = $results['registration'];
     $registration_players = $results['registration_players'];
@@ -441,7 +378,6 @@ class AdminController extends Controller {
     $livesync_off = $livesync->getValue() === '0';
     $custom_logo_on = $custom_logo->getValue() === '1';
     $custom_logo_off = $custom_logo->getValue() === '0';
-
     $game_start_array = array();
     if ($start_ts->getValue() !== '0' && $start_ts->getValue() !== 'NaN') {
       $game_start_ts = $start_ts->getValue();
@@ -459,7 +395,6 @@ class AdminController extends Controller {
       $game_start_array['hours'] = '0';
       $game_start_array['minutes'] = '0';
     }
-
     $game_end_array = array();
     if ($end_ts->getValue() !== '0' && $end_ts->getValue() !== 'NaN') {
       $game_end_ts = $end_ts->getValue();
@@ -477,7 +412,6 @@ class AdminController extends Controller {
       $game_end_array['hours'] = '0';
       $game_end_array['minutes'] = '0';
     }
-
     if ($game->getValue() === '0') {
       $timer_start_ts = tr('Not started yet');
       $timer_end_ts = tr('Not started yet');
@@ -492,7 +426,6 @@ class AdminController extends Controller {
       $game_schedule_reset_class = 'fb-cta cta--yellowe';
       $game_schedule_reset_action = '';
     }
-
     $registration_type = await Configuration::gen('registration_type');
     if ($registration_type->getValue() === '2') { // Registration is tokenized
       $registration_tokens = await $this->genRenderConfigurationTokens();
@@ -524,7 +457,6 @@ class AdminController extends Controller {
       $tabs_conf = <div class="radio-tabs"></div>;
       $registration_tokens = <div></div>;
     }
-
     $awaitables = Map {
       'registration_type_select' => $this->genRegistrationTypeSelect(),
       'configuration_duration_select' =>
@@ -533,13 +465,11 @@ class AdminController extends Controller {
       'password_types_select' => $this->genStrongPasswordsSelect(),
     };
     $results = await \HH\Asio\m($awaitables);
-
     $registration_type_select = $results['registration_type_select'];
     $configuration_duration_select =
       $results['configuration_duration_select'];
     $language_select = $results['language_select'];
     $password_types_select = $results['password_types_select'];
-
     if ($login_strongpasswords->getValue() === '0') { // Strong passwords are not enforced
       $strong_passwords = <div></div>;
     } else {
@@ -549,7 +479,6 @@ class AdminController extends Controller {
           {$password_types_select}
         </div>;
     }
-
     if ($custom_logo->getValue() === '0') { // Custom branding is not enabled
       $custom_logo_xhp = <div></div>;
     } else {
@@ -576,7 +505,6 @@ class AdminController extends Controller {
           />
         </div>;
     }
-
     return
       <div>
         <header class="admin-page-header">
@@ -1327,260 +1255,6 @@ class AdminController extends Controller {
         </div>
       </div>;
   }
-  //add
-public async function genRenderBatchsContent(): Awaitable<:xhp> {
-    //$announcements = await Announcement::genAllAnnouncements();
-   // $announcements = await Attachment::genAllBatchs();
-   try{ 
-    //$announcements = await Batch::test();
-    $announcements = await Announcement::genAllAnnouncements();
-     }catch(Exception $e){
-                 $file  = '/var/www/fbctf/src/log.txt';
-                 $error='Message: ' .$e->getMessage()."line:".$e->getLine().' in '.$e->getFile();
-                 file_put_contents($file, $error,FILE_APPEND);
-    }
-    $announcements_div = <div></div>;
-    if ($announcements) {
-      foreach ($announcements as $announcement) {
-        $announcements_div->appendChild(
-          <section class="admin-box">
-            <form class="batchs_form">
-              <input
-                type="hidden"
-                name="batch_id"
-                value={strval($announcement->getId())}
-              />
-              <header class="management-header">
-                <h6>{time_ago($announcement->getTs())}</h6>
-              </header>
-              <div class="fb-column-container">
-                <div class="col col-pad">
-                  <div class="selected-logo">
-                    <label>{tr('Batch Number')}:</label>
-                    <span class="logo-name">
-                     {$announcement->getTs()}
-                    </span>
-                  </div>
-                </div>
-		 <div class="col col-pad">
-                  <div class="selected-logo">
-		    <label>{tr('Start Time')}:</label>
-                    <span class="logo-name">
-                      {$announcement->getTs()}
-                    </span>
-                  </div>
-                </div>
-                 <div class="col col-pad">
-                  <div class="selected-logo">
-                    <label>{tr('End Time')}:</label>
-                    <span class="logo-name">
-                     {$announcement->getTs()}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </section>
-        );
-      }
-    } else {
-      $announcements_div->appendChild(
-        <section class="admin-box">
-          <div class="fb-column-container">
-            <div class="col col-pad">
-              <div class="selected-logo-text">
-                <span class="logo-name">{tr('No Batchs')}</span>
-              </div>
-            </div>
-          </div>
-        </section>
-      );
-    } 
-
-   //数据
-  $adminsections =
-      <div class="admin-sections">
-        <section
-          id="new-element"
-          class="validate-form admin-box completely-hidden">
-          <form class="level_form batch_time">
-            <input type="hidden" name="level_type" value="batch" />
-            <header class="admin-box-header">
-              <h3>{tr('Add Batch')}</h3>
-            </header>
-            <div class="fb-column-container">
-              <div class="col col-pad col-1-2">
-                <div
-                  class=
-                    "form-el form-el--required el--block-label el--full-text">
-                  <label>{tr('Batch Number')}</label>
-                <input name="batch_number" type="text" />
-	        </div>
-              </div>
-            </div>
-	
-             <div class="fb-column-container">
-                  <div class="col col-pad col-1-5">
-                    <div class="form-el form-el--required  el--block-label el--full-text">
-                      <label for="">{tr('Start Year')}</label>
-                      <input
-                        type="number"
-                        value=""
-                        name="batchs-start_year"
-                      />
-                    </div>
-		   <div class="form-el form-el--required el--block-label el--full-text">
-                      <label for="">{tr('End Year')}</label>
-                      <input
-                        type="number"
-                        value=""
-                        name="batchs-end_year"
-                      />
-                   </div>
-                 </div>
-		
-		 <div class="col col-pad col-2-5">
-                    <div class="form-el form-el--required el--block-label el--full-text">
-                      <label for="">{tr('Month')}</label>
-                      <input
-                        type="number"
-                        value=""
-                        name="batchs-start_month"
-                      />
-                    </div>
-                    <div class="form-el form-el--required el--block-label el--full-text">
-                      <label for="">{tr('Month')}</label>
-                      <input
-                        type="number"
-                        value=""
-                        name="batchs-end_month"
-                      />
-                    </div>
-                </div>
-		    <div class="col col-pad col-3-5">
-                    <div class="form-el  form-el--required el--block-label el--full-text">
-                      <label for="">{tr('Day')}</label>
-                      <input
-                        type="number"
-                        value="" 
-                        name="batchs-start_day"
-                      />
-                    </div>
-                    <div class="form-el form-el--required  el--block-label el--full-text">
-                      <label for="">{tr('Day')}</label>
-                      <input
-                        type="number"
-                        value="" 
-                        name="batchs-end_day"
-                      />
-                    </div>
-                  </div>		
-                  <div class="col col-pad col-4-5">
-                    <div class="form-el form-el--required el--block-label el--full-text">
-                      <label for="">{tr('Hour')}</label>
-                      <input
-                        type="number"
-                        value="" 
-                        name="batchs-start_hour"
-                      />
-                    </div>
-                    <div class="form-el  form-el--required el--block-label el--full-text">
-                      <label for="">{tr('Hour')}</label>
-                      <input
-                        type="number"
-                        value="" 
-                        name="batchs-end_hour"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="col col-pad col-5-5">
-                    <div class="form-el form-el--required el--block-label el--full-text">
-                      <label for="">{tr('Minute')}</label>
-                      <input
-                        type="number"
-                        value="" 
-                        name="batchs-start_min"
-                      />
-                    </div>
-                    <div class="form-el form-el--required el--block-label el--full-text">
-                      <label for="">{tr('Minute')}</label>
-                      <input
-                        type="number"
-                        value="" 
-                        name="batchs-end_min"
-                      />
-                    </div>
-                  </div>	
-             </div>
-
-
-
-
-
-
-
-	
-            <div class="admin-buttons admin-row">
-              <div class="button-right">
-                <button class="fb-cta cta--red" data-action="delete">
-                  {tr('Delete')}
-                </button>
-                <button class="fb-cta cta--yellow" data-action="create">
-                  {tr('Create')}
-                </button>
-              </div>
-            </div>
-          </form>
-        </section>
-        <section id="new-element" class="admin-box">
-          <header class="admin-box-header">
-            <h3>{tr('All Batchs')}</h3>
-          </header>
-          <header class="admin-box-header">
-            <h3>{tr('Filter By:')}</h3>
-            <div class="form-el fb-column-container col-gutters">
-              <div class="col col-1-5 el--block-label el--full-text"></div>
-              <div class="col col-1-5 el--block-label el--full-text">
-                <select class="not_configuration" name="status_filter">
-                  <option class="filter_option" value="all">
-                    {tr('All Status')}
-                  </option>
-                  <option class="filter_option" value="Enabled">
-                    {tr('Enabled')}
-                  </option>
-                  <option class="filter_option" value="Disabled">
-                    {tr('Disabled')}
-                  </option>
-                </select>
-              </div>
-              <div class="col col-1-5 el--block-label el--full-text"></div>
-              <div class="col col-1-5 el--block-label el--full-text"></div>
-              <div class="col col-1-5 el--block-label el--full-text"></div>
-            </div>
-          </header>
-        </section>
-      </div>;
-   //end	
-    return
-      <div class="admin-sections">
-          <header class="admin-page-header">
-          <h3>{tr('Batchs  Controls')}</h3>
-          <span class="admin-section--status">
-            {tr('status_')}<span class="highlighted">{tr('OK')}</span>
-          </span>
-        </header>
-        {$adminsections}
-        {$announcements_div}
-        <br/> 
-	<div class="admin-buttons">
-          <button class="fb-cta" data-action="add-new">
-            {tr('Add Examination Batch')}
-          </button>
-        </div>
-     </div>; 
-}
-  //end	
   public async function genRenderAnnouncementsContent(): Awaitable<:xhp> {
     $announcements = await Announcement::genAllAnnouncements();
     $announcements_div = <div></div>;
@@ -1667,7 +1341,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </div>
       </div>;
   }
-
   public function renderControlsContent(): :xhp {
     return
       <div>
@@ -1930,7 +1603,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </div>
       </div>;
   }
-
   public async function genRenderQuizContent(): Awaitable<:xhp> {
     $countries_select = await $this->genGenerateCountriesSelect(0);
     $adminsections =
@@ -1964,32 +1636,11 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
                     placeholder={tr('Quiz question')}
                     rows={4}>
                   </textarea>
-                </div> 
-                  <!--add-->
-		 <div class="form-el fb-column-container col-gutters">
-                  <div class="col col-2-3 el--block-label el--full-text">
-                    <label>{tr('A')}</label>
-                    <input name="A" type="text" />
-                  </div>
-                  <div class="col col-2-3 el--block-label el--full-text">
-                    <label>{tr('B')}</label>
-                    <input name="B" type="text" />
-                  </div>
-                  <div class="col col-2-3 el--block-label el--full-text">
-                    <label>{tr('C')}</label>
-                    <input name="C" type="text" />
-                  </div>
-                  <div class="col col-2-3 el--block-label el--full-text">
-                    <label>{tr('D')}</label>
-                    <input name="D" type="text" />
-                  </div>
                 </div>
-
-                <!--end-->
                 <div class="form-el el--block-label el--full-text">
-                  <label for="">{tr('Batch Number')}</label>
+                  <label for="">{tr('Country')}</label>
+                  {$countries_select}
                 </div>
-               
               </div>
               <div class="col col-pad col-1-2">
                 <div class="form-el fb-column-container col-gutters">
@@ -2077,26 +1728,21 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
           </header>
         </section>
       </div>;
-
     $c = 1;
     $quizes = await Level::genAllQuizLevels();
     foreach ($quizes as $quiz) {
       $quiz_active_on = ($quiz->getActive());
       $quiz_active_off = (!$quiz->getActive());
-
       $quiz_status_name =
         'fb--levels--level-'.strval($quiz->getId()).'-status';
       $quiz_status_on_id =
         'fb--levels--level-'.strval($quiz->getId()).'-status--on';
       $quiz_status_off_id =
         'fb--levels--level-'.strval($quiz->getId()).'-status--off';
-
       $quiz_id = strval($quiz->getId());
       $quiz_id_txt = 'quiz_id'.strval($quiz->getId());
-
       $countries_select =
         await $this->genGenerateCountriesSelect($quiz->getEntityId()); // TODO: Combine Awaits
-
       $delete_button =
         <div style="display: inline">
           <input type="hidden" name="level_id" value={$quiz_id} />
@@ -2107,7 +1753,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
             {tr('Delete')}
           </a>
         </div>;
-
       $adminsections->appendChild(
         <section class="admin-box validate-form section-locked">
           <form class="level_form quiz_form" name={$quiz_id_txt}>
@@ -2157,7 +1802,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
                     {$quiz->getDescription()}
                   </textarea>
                 </div>
-                
                 <div class="form-el el--block-label el--full-text">
                   <label for="">{tr('Country')}</label>
                   {$countries_select}
@@ -2251,7 +1895,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
       );
       $c++;
     }
-
     return
       <div>
         <header class="admin-page-header">
@@ -2268,9 +1911,8 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </div>
       </div>;
   }
-
   public async function genRenderFlagsContent(): Awaitable<:xhp> {
-   list(
+    list(
       $countries_select,
       $level_categories_select,
       $filter_categories_select,
@@ -2279,7 +1921,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
       $this->genGenerateLevelCategoriesSelect(0),
       $this->genGenerateFilterCategoriesSelect(),
     );
-   
     $adminsections =
       <div class="admin-sections">
         <section
@@ -2288,7 +1929,7 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
           <form class="level_form flag_form">
             <input type="hidden" name="level_type" value="flag" />
             <header class="admin-box-header">
-              <h3>{tr('New Fill in the blanks Level')}</h3>
+              <h3>{tr('New Flag Level')}</h3>
             </header>
             <div class="fb-column-container">
               <div class="col col-pad col-1-2">
@@ -2316,15 +1957,13 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
                   class=
                     "form-el form-el--required fb-column-container col-gutters">
                   <div class="col col-1-2 el--block-label el--full-text">
-                    <label for="">{tr('Category')}</label>
-                    {$level_categories_select}
-                  </div>
-		  //add
-  		 <div class="col col-1-2 el--block-label el--full-text">
                     <label for="">{tr('Country')}</label>
                     {$countries_select}
                   </div>
-                  //end
+                  <div class="col col-1-2 el--block-label el--full-text">
+                    <label for="">{tr('Category')}</label>
+                    {$level_categories_select}
+                  </div>
                 </div>
               </div>
               <div class="col col-pad col-1-2">
@@ -2341,12 +1980,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
                     <label>{tr('Points')}</label>
                     <input name="points" type="text" />
                   </div>
-		   <div
-                    class=
-                      "form-el--required col col-1-3 el--block-label el--full-text">
-                    <label>{tr('Weight')}</label>
-                    <input name="weight" type="text" />
-                  </div>	
                 </div>
                 <div class="form-el fb-column-container col-gutters">
                   <div class="col col-2-3 el--block-label el--full-text">
@@ -2377,7 +2010,7 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </section>
         <section id="new-element" class="admin-box">
           <header class="admin-box-header">
-            <h3>{tr('All Fill in the blanks Levels')}</h3>
+            <h3>{tr('All Flag Levels')}</h3>
             <form class="all_flag_form">
               <div class="admin-section-toggle radio-inline col">
                 <input
@@ -2421,23 +2054,19 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
           </header>
         </section>
       </div>;
-
     $c = 1;
     $flags = await Level::genAllFlagLevels();
     foreach ($flags as $flag) {
       $flag_active_on = ($flag->getActive());
       $flag_active_off = (!$flag->getActive());
-
       $flag_status_name =
         'fb--levels--level-'.strval($flag->getId()).'-status';
       $flag_status_on_id =
         'fb--levels--level-'.strval($flag->getId()).'-status--on';
       $flag_status_off_id =
         'fb--levels--level-'.strval($flag->getId()).'-status--off';
-
       $flag_id_txt = 'flag_id'.strval($flag->getId());
       $flag_id = strval($flag->getId());
-
       $delete_button =
         <div style="display: inline">
           <input type="hidden" name="level_id" value={$flag_id} />
@@ -2448,7 +2077,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
             {tr('Delete')}
           </a>
         </div>;
-
       $attachments_div =
         <div class="attachments">
           <div
@@ -2491,7 +2119,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
             </div>
           </div>
         </div>;
-
       $attachments = await Attachment::genHasAttachments($flag->getId()); // TODO: Combine Awaits
       if ($attachments) {
         $a_c = 1;
@@ -2537,7 +2164,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
           $a_c++;
         }
       }
-
       $links_div =
         <div class="links">
           <div
@@ -2573,7 +2199,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
             </div>
           </div>
         </div>;
-
       $links = await Link::genHasLinks($flag->getId()); // TODO: Combine Awaits
       if ($links) {
         $l_c = 1;
@@ -2616,12 +2241,10 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
           $l_c++;
         }
       }
-
       list($countries_select, $level_categories_select) = await \HH\Asio\va(
         $this->genGenerateCountriesSelect($flag->getEntityId()),
         $this->genGenerateLevelCategoriesSelect($flag->getCategoryId()),
       ); // TODO: Combine Awaits
-
       $adminsections->appendChild(
         <section class="validate-form admin-box section-locked">
           <form class="level_form flag_form" name={$flag_id_txt}>
@@ -2632,7 +2255,7 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
               value={strval($flag->getId())}
             />
             <header class="admin-box-header">
-              <h3>{tr('Fill in the blanks Level')} {$c}</h3>
+              <h3>{tr('Flag Level')} {$c}</h3>
               <div class="admin-section-toggle radio-inline">
                 <input
                   type="radio"
@@ -2673,15 +2296,13 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
                 </div>
                 <div class="form-el fb-column-container col-gutters">
                   <div class="col col-1-2 el--block-label el--full-text">
+                    <label for="">{tr('Country')}</label>
+                    {$countries_select}
+                  </div>
+                  <div class="col col-1-2 el--block-label el--full-text">
                     <label for="">{tr('Categories')}</label>
                     {$level_categories_select}
                   </div>
-                  //add Batch
-	   	 <div class="col col-1-2 el--block-label el--full-text">
-                    <label for="">{tr('Batch Number')}</label>
-		     		
-                  </div>
-                  //end
                 </div>
               </div>
               <div class="col col-pad col-1-2">
@@ -2689,7 +2310,7 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
                   <div
                     class=
                       "form-el--required col el--block-label el--full-text">
-                    <label>{tr('Answer')}</label>
+                    <label>{tr('Flag')}</label>
                     <input
                       name="flag"
                       type="password"
@@ -2713,18 +2334,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
                       disabled={true}
                     />
                   </div>
-		   
-		   <div
-                    class=
-                      "form-el--required col col-1-3 el--block-label el--full-text">
-                    <label>{tr('Weight')}</label>
-                    <input
-                      name="weight"
-                      type="text"
-                      value={strval($flag->getWeight())}
-                      disabled={true}
-                    />
-                  </div> 			
                   <div
                     class=
                       "form-el--required col col-1-3 el--block-label el--full-text">
@@ -2783,12 +2392,19 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
                 {tr('Save')}
               </button>
             </div>
+            <div class="button-left">
+              <button class="fb-cta" data-action="add-attachment">
+                {tr('+ Attachment')}
+              </button>
+              <button class="fb-cta" data-action="add-link">
+                {tr('+ Link')}
+              </button>
+            </div>
           </div>
         </section>
       );
       $c++;
     }
-
     return
       <div>
         <header class="admin-page-header">
@@ -2800,12 +2416,11 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         {$adminsections}
         <div class="admin-buttons">
           <button class="fb-cta" data-action="add-new">
-            {tr('Add Fill in the blanks Level')}
+            {tr('Add Flag Level')}
           </button>
         </div>
       </div>;
   }
-
   public async function genRenderBasesContent(): Awaitable<:xhp> {
     list(
       $countries_select,
@@ -2849,6 +2464,10 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
                   </textarea>
                 </div>
                 <div class="form-el fb-column-container col-gutters">
+                  <div class="col col-1-2 el--block-label el--full-text">
+                    <label for="">{tr('Country')}</label>
+                    {$countries_select}
+                  </div>
                   <div class="col col-1-2 el--block-label el--full-text">
                     <label for="">{tr('Category')}</label>
                     {$level_categories_select}
@@ -2943,23 +2562,19 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
           </header>
         </section>
       </div>;
-
     $c = 1;
     $all_base_levels = await Level::genAllBaseLevels();
     foreach ($all_base_levels as $base) {
       $base_active_on = ($base->getActive());
       $base_active_off = (!$base->getActive());
-
       $base_status_name =
         'fb--levels--level-'.strval($base->getId()).'-status';
       $base_status_on_id =
         'fb--levels--level-'.strval($base->getId()).'-status--on';
       $base_status_off_id =
         'fb--levels--level-'.strval($base->getId()).'-status--off';
-
       $base_id = strval($base->getId());
       $base_id_txt = 'base_id'.strval($base->getId());
-
       $delete_button =
         <div style="display: inline">
           <input type="hidden" name="level_id" value={$base_id} />
@@ -2970,7 +2585,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
             {tr('Delete')}
           </a>
         </div>;
-
       $attachments_div =
         <div class="attachments">
           <div
@@ -3058,7 +2672,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         }
         $a_c++;
       }
-
       $links_div =
         <div class="links">
           <div
@@ -3094,7 +2707,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
             </div>
           </div>
         </div>;
-
       $has_links = await Link::genHasLinks($base->getId()); // TODO: Combine Awaits
       if ($has_links) {
         $l_c = 1;
@@ -3141,12 +2753,10 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         }
         $l_c++;
       }
-
       list($countries_select, $level_categories_select) = await \HH\Asio\va(
         $this->genGenerateCountriesSelect($base->getEntityId()),
         $this->genGenerateLevelCategoriesSelect($base->getCategoryId()),
       ); // TODO: Combine Awaits
-
       $adminsections->appendChild(
         <section class="validate-form admin-box section-locked">
           <form class="level_form base_form" name={$base_id_txt}>
@@ -3280,7 +2890,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
       );
       $c++;
     }
-
     return
       <div>
         <header class="admin-page-header">
@@ -3297,10 +2906,8 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </div>
       </div>;
   }
-
   public async function genRenderCategoriesContent(): Awaitable<:xhp> {
     $adminsections = <div class="admin-sections"></div>;
-
     $adminsections->appendChild(
       <section class="admin-box completely-hidden">
         <form class="categories_form">
@@ -3328,9 +2935,7 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </form>
       </section>
     );
-
     $categories = await Category::genAllCategories();
-
     foreach ($categories as $category) {
       if ($category->getProtected()) {
         $category_name =
@@ -3351,7 +2956,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
             </a>
           </div>;
       }
-
       $is_used = await Category::genIsUsed($category->getId()); // TODO: Combine Awaits
       ;
       if ($is_used || $category->getProtected()) {
@@ -3386,7 +2990,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </section>
       );
     }
-
     return
       <div>
         <header class="admin-page-header">
@@ -3403,10 +3006,8 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </div>
       </div>;
   }
-
   public async function genRenderCountriesContent(): Awaitable<:xhp> {
     $adminsections = <div class="admin-sections"></div>;
-
     $adminsections->appendChild(
       <section id="new-element" class="admin-box">
         <header class="admin-box-header">
@@ -3447,7 +3048,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </header>
       </section>
     );
-
     $all_countries = await Country::genAllCountries();
     foreach ($all_countries as $country) {
       $using_country = await Level::genWhoUses($country->getId()); // TODO: Combine Awaits
@@ -3461,7 +3061,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         $highlighted_color = 'highlighted--green country-disabled';
         $current_status = 'Enabled';
       }
-
       if (!$using_country) {
         $status_action =
           <a
@@ -3473,7 +3072,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
       } else {
         $status_action = <a class={$highlighted_color}></a>;
       }
-
       $adminsections->appendChild(
         <section class="admin-box">
           <form class="country_form">
@@ -3524,12 +3122,9 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         {$adminsections}
       </div>;
   }
-
   private async function genGenerateTeamNames(int $team_id): Awaitable<:xhp> {
     $names = <section class="admin-box"></section>;
-
     $teams_data = await Team::genTeamData($team_id);
-
     if (count($teams_data) > 0) {
       foreach ($teams_data as $data) {
         $names->appendChild(
@@ -3568,10 +3163,8 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </div>
       );
     }
-
     return $names;
   }
-
   private async function genGenerateTeamScores(int $team_id): Awaitable<:xhp> {
     $scores_div = <div></div>;
     $scores = await ScoreLog::genAllScoresByTeam($team_id, true);
@@ -3612,10 +3205,8 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </div>
       );
     }
-
     return $scores_div;
   }
-
   private async function genGenerateTeamFailures(
     int $team_id,
   ): Awaitable<:xhp> {
@@ -3660,10 +3251,8 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </div>
       );
     }
-
     return $failures_div;
   }
-
   private async function genGenerateTeamTabs(int $team_id): Awaitable<:xhp> {
     $team_tabs_team = 'fb--teams--tabs--team-team'.strval($team_id);
     $team_tabs_names = 'fb--teams--tabs--names-team'.strval($team_id);
@@ -3674,7 +3263,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
     $tab_names = 'names'.strval($team_id);
     $tab_scores = 'scores'.strval($team_id);
     $tab_failures = 'failures'.strval($team_id);
-
     $team_tabs = <div class="radio-tabs"></div>;
     $team_tabs->appendChild(
       <input
@@ -3688,7 +3276,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
     $team_tabs->appendChild(
       <label for={$team_tabs_team}>{tr('Team')}</label>,
     );
-
     $registration_names = await Configuration::gen('registration_names');
     if ($registration_names->getValue() === '1') {
       $team_tabs->appendChild(
@@ -3703,7 +3290,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         <label for={$team_tabs_names}>{tr('Names')}</label>,
       );
     }
-
     $team_tabs->appendChild(
       <input
         type="radio"
@@ -3715,7 +3301,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
     $team_tabs->appendChild(
       <label for={$team_tabs_scores}>{tr('Scores')}</label>,
     );
-
     $team_tabs->appendChild(
       <input
         type="radio"
@@ -3727,10 +3312,8 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
     $team_tabs->appendChild(
       <label for={$team_tabs_failures}>{tr('Failures')}</label>,
     );
-
     return $team_tabs;
   }
-
   public async function genRenderTeamsContent(): Awaitable<:xhp> {
     $adminsections =
       <div class="admin-sections">
@@ -3766,7 +3349,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
                   <div class="post-avatar has-avatar">
                     <svg class="icon icon--badge">
                       <use href="#icon--badge-" />
-
                     </svg>
                   </div>
                 </div>
@@ -3818,7 +3400,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
           </header>
         </section>
       </div>;
-
     $c = 1;
     $all_teams = await Team::genAllTeams();
     foreach ($all_teams as $team) {
@@ -3832,7 +3413,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
             <use href={$iconbadge} />
           </svg>;
       }
-
       $team_protected = $team->getProtected();
       $team_active_on = $team->getActive();
       $team_active_off = !$team->getActive();
@@ -3841,7 +3421,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
       $team_visible_on = $team->getVisible();
       $team_visible_off = !$team->getVisible();
       $team_id = strval($team->getId());
-
       $team_status_name = 'fb--teams--team-'.strval($team->getId()).'-status';
       $team_status_on_id =
         'fb--teams--team-'.strval($team->getId()).'-status--on';
@@ -3858,7 +3437,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         'fb--teams--team-'.strval($team->getId()).'-visible--on';
       $team_visible_off_id =
         'fb--teams--team-'.strval($team->getId()).'-visible--off';
-
       if ($team_protected) {
         $toggle_status =
           <div class="admin-section-toggle radio-inline">
@@ -3930,26 +3508,21 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
             </a>
           </div>;
       }
-
       $tab_team = 'team'.strval($team->getId());
       $tab_names = 'names'.strval($team->getId());
       $tab_scores = 'scores'.strval($team->getId());
       $tab_failures = 'failures'.strval($team->getId());
-
       $awaitables = Map {
         'team_tabs' => $this->genGenerateTeamTabs($team->getId()),
         'team_names' => $this->genGenerateTeamNames($team->getId()),
         'team_scores' => $this->genGenerateTeamScores($team->getId()),
         'team_failures' => $this->genGenerateTeamFailures($team->getId()),
       };
-
       $results = await \HH\Asio\m($awaitables); // TODO: Combine Awaits
-
       $team_tabs = $results['team_tabs'];
       $team_names = $results['team_names'];
       $team_scores = $results['team_scores'];
       $team_failures = $results['team_failures'];
-
       $adminsections->appendChild(
         <div>
           {$team_tabs}
@@ -4120,12 +3693,9 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </div>
       </div>;
   }
-
   public async function genRenderLogosContent(): Awaitable<:xhp> {
     $adminsections = <div class="admin-sections"></div>;
-
     $all_logos = await Logo::genAllLogos();
-
     foreach ($all_logos as $logo) {
       if ($logo->getCustom()) {
         $image = <img class="icon--badge" src={$logo->getLogo()}></img>;
@@ -4146,7 +3716,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         $highlighted_color = 'highlighted--green';
       }
       $action_text = strtoupper(explode('_', $highlighted_action)[0]);
-
       if ($using_logo) {
         $use_select = <select class="not_configuration"></select>;
         foreach ($using_logo as $t) {
@@ -4158,7 +3727,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
             <option value="0">{tr('None')}</option>
           </select>;
       }
-
       $adminsections->appendChild(
         <section class="admin-box">
           <form class="logo_form">
@@ -4208,7 +3776,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </section>
       );
     }
-
     return
       <div>
         <header class="admin-page-header">
@@ -4220,10 +3787,8 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         {$adminsections}
       </div>;
   }
-
   public async function genRenderSessionsContent(): Awaitable<:xhp> {
     $adminsections = <div class="admin-sections"></div>;
-
     $c = 1;
     $all_sessions = await Session::genAllSessions();
     foreach ($all_sessions as $session) {
@@ -4334,10 +3899,8 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         {$adminsections}
       </div>;
   }
-
   public async function genRenderLogsContent(): Awaitable<:xhp> {
     $gamelogs = await GameLog::genGameLog();
-
     if (count($gamelogs) > 0) {
       $logs_tbody = <tbody></tbody>;
       $logs_table = <div></div>;
@@ -4349,24 +3912,17 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
           $log_entry =
             <span class="highlighted--red">{$gamelog->getEntry()}</span>;
         }
-
         list($team, $level) = await \HH\Asio\va(
           MultiTeam::genTeam($gamelog->getTeamId()),
           Level::gen($gamelog->getLevelId()),
         ); // TODO: Combine Awaits
-
         invariant($team !== null, 'Team should not be null');
         invariant($team instanceof Team, 'team should be of type Team');
-
         invariant($level !== null, 'Level should not be null');
         invariant($level instanceof Level, 'level should be of type Level');
-
         $country = await Country::gen($level->getEntityId()); // TODO: Combine Awaits
-        //$country=Category::genSingleCategory($level->getCategoryId());
         $team_name = $team->getName();
-
         $level_str =
-          //$country->getCategory().
           $country->getName().
           ' - '.
           $level->getTitle().
@@ -4405,7 +3961,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
           </div>
         </div>;
     }
-
     return
       <div>
         <header class="admin-page-header">
@@ -4426,11 +3981,9 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </div>
       </div>;
   }
-
   public function renderMainContent(): :xhp {
     return <h1>{tr('ADMIN')}</h1>;
   }
-
   public async function genRenderMainNav(): Awaitable<:xhp> {
     $game = await Configuration::gen('game');
     $game_status = $game->getValue() === '1';
@@ -4483,23 +4036,18 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
               </a>
             </li>
             <li>
-              <a href="/index.php?p=admin&page=batchs">
-                {tr('Examination')}: {tr('Batch')}
-              </a>
-            </li>
-            <li>
               <a href="/index.php?p=admin&page=quiz">
-                {tr('Levels')}: {tr('Choice question')}
+                {tr('Levels')}: {tr('Quiz')}
               </a>
             </li>
             <li>
               <a href="/index.php?p=admin&page=flags">
-                {tr('Levels')}: {tr('Fill in the blanks')}
+                {tr('Levels')}: {tr('Flags')}
               </a>
             </li>
             <li>
               <a href="/index.php?p=admin&page=bases">
-                {tr('Levels')}: {tr('Essay question')}
+                {tr('Levels')}: {tr('Bases')}
               </a>
             </li>
             <li>
@@ -4507,8 +4055,11 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
                 {tr('Levels')}: {tr('Categories')}
               </a>
             </li>
-            
-            
+            <li>
+              <a href="/index.php?p=admin&page=countries">
+                {tr('Levels')}: {tr('Countries')}
+              </a>
+            </li>
             <li>
               <a href="/index.php?p=admin&page=teams">{tr('Teams')}</a>
             </li>
@@ -4539,7 +4090,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         </div>
       </div>;
   }
-
   public async function genRenderPage(string $page): Awaitable<:xhp> {
     switch ($page) {
       case 'main':
@@ -4576,9 +4126,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
       case 'logos':
         return await $this->genRenderLogosContent();
         break;
-      case 'batchs':
-        return await $this->genRenderBatchsContent();	
-        break;
       case 'sessions':
         return await $this->genRenderSessionsContent();
         break;
@@ -4590,7 +4137,6 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
         break;
     }
   }
-
   <<__Override>>
   public async function genRenderBody(string $page): Awaitable<:xhp> {
     list($rendered_page, $rendered_main_nav) = await \HH\Asio\va(
@@ -4618,3 +4164,4 @@ public async function genRenderBatchsContent(): Awaitable<:xhp> {
       </body>;
   }
 }
+
