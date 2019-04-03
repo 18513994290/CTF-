@@ -1604,7 +1604,15 @@ class AdminController extends Controller {
       </div>;
   }
   public async function genRenderQuizContent(): Awaitable<:xhp> {
-    $countries_select = await $this->genGenerateCountriesSelect(0);
+     list(
+      $countries_select,
+      $level_categories_select,
+      $filter_categories_select,
+    ) = await \HH\Asio\va(
+      $this->genGenerateCountriesSelect(0),
+      $this->genGenerateLevelCategoriesSelect(0),
+      $this->genGenerateFilterCategoriesSelect(),
+    );  
     $adminsections =
       <div class="admin-sections">
         <section
@@ -1613,7 +1621,7 @@ class AdminController extends Controller {
           <form class="level_form quiz_form">
             <input type="hidden" name="level_type" value="quiz" />
             <header class="admin-box-header">
-              <h3>{tr('New Quiz Level')}</h3>
+              <h3>{tr('New Quiz Level')}</h3><!--选择题-->
             </header>
             <div class="fb-column-container">
               <div class="col col-pad col-1-2">
@@ -1636,10 +1644,19 @@ class AdminController extends Controller {
                     placeholder={tr('Quiz question')}
                     rows={4}>
                   </textarea>
-                </div>
-                <div class="form-el el--block-label el--full-text">
-                  <label for="">{tr('Country')}</label>
-                  {$countries_select}
+               </div>
+                <!--TODO Quiz-->
+                 <div
+                  class=
+                    "form-el form-el--required fb-column-container col-gutters">
+                  <div class="col col-1-2 el--block-label el--full-text">
+                    <label for="">{tr('Country')}</label>
+                    {$countries_select}
+                  </div>
+                  <div class="col col-1-2 el--block-label el--full-text">
+                    <label for="">{tr('Category')}</label>
+                    {$level_categories_select}
+                  </div>
                 </div>
               </div>
               <div class="col col-pad col-1-2">
@@ -1667,6 +1684,7 @@ class AdminController extends Controller {
                     <input name="penalty" type="text" />
                   </div>
                 </div>
+                 <!--TODO添加 -->	
               </div>
             </div>
             <div class="admin-buttons admin-row">

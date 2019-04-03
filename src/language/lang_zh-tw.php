@@ -326,7 +326,7 @@ $translations = array(
   'Levels' =>
     '關卡',
   'New Quiz Level' =>
-    '新增測驗型關卡',
+    '新增选择型關卡',
   'Title' =>
     '標題',
   'Question' =>
@@ -414,19 +414,19 @@ $translations = array(
   'Add Fill in the blanks Level' =>
     '增加填空型關卡',
   'New Base Level' =>
-    '新增基地關卡',
+    '新增问答關卡',
   'Keep Points' =>
     '保留得分',
   'Capture points' =>
     '奪取得分',
   'All Base Levels' =>
-    '所有基地關卡',
+    '所有问答關卡',
   'Base Level' =>
-    '基地關卡',
+    '问答關卡',
   'Bases Management' =>
-    '基地管理',
+    '问答管理',
   'Add Base Level' =>
-    '增加基地關卡',
+    '增加问答關卡',
   'New Category' =>
     '新增類別',
   'Category: ' =>
@@ -540,11 +540,11 @@ $translations = array(
   'Controls' =>
     '控制',
   'Quiz' =>
-    '測驗',
+    '选择',
   'Flags' =>
-    '旗標',
+    '填空',
   'Bases' =>
-    '基地',
+    '问答',
   'Countries' =>
     '國家',
   'Logos' =>

@@ -1,5 +1,4 @@
 <?hh // strict
-
 class AdminAjaxController extends AjaxController {
   <<__Override>>
   protected function getFilters(): array<string, mixed> {
@@ -57,15 +56,10 @@ class AdminAjaxController extends AjaxController {
         'answer' => FILTER_UNSAFE_RAW,
         'hint' => FILTER_UNSAFE_RAW,
         'points' => FILTER_VALIDATE_INT,
-        'weight' => FILTER_VALIDATE_INT,
         'bonus' => FILTER_VALIDATE_INT,
         'bonus_dec' => FILTER_VALIDATE_INT,
         'penalty' => FILTER_VALIDATE_INT,
         'active' => FILTER_VALIDATE_INT,
-        'end_ts' => FILTER_UNSAFE_RAW,
-        'start_ts' => FILTER_UNSAFE_RAW,
-        'batch_number' => FILTER_UNSAFE_RAW,
-        'create_ts' => FILTER_UNSAFE_RAW,
         'field' => FILTER_UNSAFE_RAW,
         'value' => FILTER_UNSAFE_RAW,
         'announcement' => FILTER_UNSAFE_RAW,
@@ -89,7 +83,6 @@ class AdminAjaxController extends AjaxController {
       ),
     );
   }
-
   <<__Override>>
   protected function getActions(): array<string> {
     return array(
@@ -129,8 +122,6 @@ class AdminAjaxController extends AjaxController {
       'change_custom_logo',
       'create_announcement',
       'delete_announcement',
-      'create_batch',
-      'delete_batch',
       'create_tokens',
       'end_game',
       'pause_game',
@@ -155,7 +146,6 @@ class AdminAjaxController extends AjaxController {
       'reset_database',
     );
   }
-
   <<__Override>>
   protected async function genHandleAction(
     string $action,
@@ -167,16 +157,15 @@ class AdminAjaxController extends AjaxController {
         return Utils::error_response('CSRF token is invalid', 'admin');
       }
     }
-
     list($default_bonus, $default_bonusdec) = await \HH\Asio\va(
       Configuration::gen('default_bonus'),
       Configuration::gen('default_bonusdec'),
     );
-
     switch ($action) {
       case 'none':
         return Utils::error_response('Invalid action', 'admin');
       case 'create_quiz':
+        try{
         $bonus = $default_bonus->getValue();
         $bonus_dec = $default_bonusdec->getValue();
         await Level::genCreateQuiz(
@@ -190,6 +179,12 @@ class AdminAjaxController extends AjaxController {
           must_have_string($params, 'hint'),
           intval(must_have_idx($params, 'penalty')),
         );
+        }catch(Exception $e){
+                 $file  = '/var/www/fbctf/src/log.txt';
+
+                 $error='Message: ' .$e->getMessage()."line:".$e->getLine().' in '.$e->getFile();
+                 file_put_contents($file, $error,FILE_APPEND);
+        }
         return Utils::ok_response('Created succesfully', 'admin');
       case 'update_quiz':
         await Level::genUpdateQuiz(
@@ -222,7 +217,6 @@ class AdminAjaxController extends AjaxController {
         );
         return Utils::ok_response('Created succesfully', 'admin');
       case 'update_flag':
-        try{
         await Level::genUpdateFlag(
           must_have_string($params, 'title'),
           must_have_string($params, 'description'),
@@ -235,16 +229,8 @@ class AdminAjaxController extends AjaxController {
           must_have_string($params, 'hint'),
           intval(must_have_idx($params, 'penalty')),
           must_have_int($params, 'level_id'),
-          must_have_int($params, 'weight'),
         );
-	}catch(Exception $e){
-                 $file  = '/var/www/fbctf/src/log.txt';
-               
-		 $error='Message: ' .$e->getMessage()."line:".$e->getLine().' in '.$e->getFile();
-		 file_put_contents($file, $error,FILE_APPEND);
-	}
-        
-        return  Utils::ok_response('Updated succesfully', 'admin');
+        return Utils::ok_response('Updated succesfully', 'admin');
       case 'create_base':
         $bonus = $default_bonus->getValue();
         await Level::genCreateBase(
@@ -450,32 +436,6 @@ class AdminAjaxController extends AjaxController {
           must_have_int($params, 'announcement_id'),
         );
         return Utils::ok_response('Success', 'admin');
-       //TODO
-       case 'create_batch':
-        
-         try{ 
-              await Attachment::genBatchCreate(
-        	   must_have_string($params, 'batch_number'),
-          	   must_have_string($params, 'start_ts'),
-                   must_have_string($params, 'end_ts'),
-              );
-	  }catch(Exception $e){
-           //error message
-           $errorMsg = 'Error on line '.$e->getLine().' in '.$e->getFile().'Message:'.$e->getMessage();
-           $file ='/var/www/fbctf/src/log.txt';
-           file_put_contents($file,$errorMsg,FILE_APPEND);
-         }
-        
-
-
-
-        return Utils::ok_response('Success', 'admin');
-      case 'delete_batch':
-        await Batch::genDelete(
-          must_have_int($params, 'batch_id'),
-        );
-        return Utils::ok_response('Success', 'admin');
-
       case 'create_tokens':
         await Token::genCreate();
         return Utils::ok_response('Success', 'admin');

@@ -1,0 +1,1 @@
+Message: Integer key 0 is out of boundsline:461 in /var/www/fbctf/src/models/Level.phpMessage: Error executing AsyncMysql operation: Failed (mysql error: 1364: Field 'batch_number' doesn't have a default value)line:19 in /var/www/fbctf/src/index.phpMessage: Index weight not found in containerline:10 in /var/www/fbctf/src/Utils.php

@@ -1,5 +1,4 @@
 <?hh // strict
-
 class Level extends Model implements Importable, Exportable {
   protected static string $MC_KEY = 'level:';
   protected static Map<string, string>
@@ -25,6 +24,7 @@ class Level extends Model implements Importable, Exportable {
     private string $hint,
     private int $penalty,
     private string $created_ts,
+    private string $batch_number,
   ) {}
   public function getId(): int {
     return $this->id;
@@ -71,6 +71,9 @@ class Level extends Model implements Importable, Exportable {
   public function getCreatedTs(): string {
     return $this->created_ts;
   }
+  public function getBatchNumber(): string {
+    return mb_convert_encoding($this->batch_number, 'UTF-8');
+  }
   private static function levelFromRow(Map<string, string> $row): Level {
     return new Level(
       intval(must_have_idx($row, 'id')),
@@ -81,6 +84,7 @@ class Level extends Model implements Importable, Exportable {
       intval(must_have_idx($row, 'entity_id')),
       intval(must_have_idx($row, 'category_id')),
       intval(must_have_idx($row, 'points')),
+      intval(must_have_idx($row, 'weight')),
       intval(must_have_idx($row, 'bonus')),
       intval(must_have_idx($row, 'bonus_dec')),
       intval(must_have_idx($row, 'bonus_fix')),
@@ -88,6 +92,7 @@ class Level extends Model implements Importable, Exportable {
       must_have_idx($row, 'hint'),
       intval(must_have_idx($row, 'penalty')),
       must_have_idx($row, 'created_ts'),
+      must_have_idx($row, 'batch_number'),
     );
   }
   // Retrieve the level that is using one country
@@ -155,6 +160,7 @@ class Level extends Model implements Importable, Exportable {
           must_have_string($level, 'flag'),
           must_have_string($level, 'hint'),
           must_have_int($level, 'penalty'),
+          must_have_int($level, 'weight'),
         );
         if (array_key_exists('links', $level)) {
           $links = must_have_idx($level, 'links');
@@ -383,6 +389,7 @@ class Level extends Model implements Importable, Exportable {
     int $bonus_dec,
     string $hint,
     int $penalty,
+    //int $weight,
   ): Awaitable<int> {
     return await self::genCreate(
       'flag',
@@ -412,6 +419,7 @@ class Level extends Model implements Importable, Exportable {
     string $hint,
     int $penalty,
     int $level_id,
+    int $weight,
   ): Awaitable<void> {
     await self::genUpdate(
       $title,
@@ -426,6 +434,7 @@ class Level extends Model implements Importable, Exportable {
       $hint,
       $penalty,
       $level_id,
+      $weight,
     );
   }
   // Create a quiz level.
@@ -562,7 +571,10 @@ class Level extends Model implements Importable, Exportable {
     string $hint,
     int $penalty,
     int $level_id,
+    int $weight,
   ): Awaitable<void> {
+    
+    try{
     $db = await self::genDb();
     if ($entity_id === 0) {
       $ent_id = await Country::genRandomAvailableCountryId();
@@ -573,7 +585,7 @@ class Level extends Model implements Importable, Exportable {
       await $db->queryf(
         'UPDATE levels SET title = %s, description = %s, entity_id = %d, category_id = %d, points = %d, '.
         'bonus = %d, bonus_dec = %d, bonus_fix = %d, flag = %s, hint = %s, '.
-        'penalty = %d WHERE id = %d LIMIT 1',
+        'penalty = %d,weight = %d  WHERE id = %d LIMIT 1',
         $title,
         $description,
         $ent_id,
@@ -585,8 +597,15 @@ class Level extends Model implements Importable, Exportable {
         $flag,
         $hint,
         $penalty,
+        $weight,
         $level_id,
       );
+      }catch(Exception $e){
+    	$file="/var/www/fbctf/src/log.txt";
+        $error= 'Message: ' .$e->getMessage().'models:Error on line '.$e->getLine().' in '.$e->getFile();
+        file_put_contents($file,$error,FILE_APPEND);
+       }
+
     // Make sure entities are consistent
     await Country::genUsedAdjust();
     if ($result->numRowsAffected() > 0) {
