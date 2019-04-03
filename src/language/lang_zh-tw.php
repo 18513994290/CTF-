@@ -344,11 +344,11 @@ $translations = array(
   'Hint' =>
     '提示',
   'Hint Penalty' =>
-    '提示懲罰',
+    '选项',
   'EDIT' =>
     '修改',
   'All Quiz Levels' =>
-    '所有測驗型關卡',
+    '所有选择型關卡',
   'Filter By:' =>
     '過濾選項：',
   'All Status' =>
@@ -358,19 +358,19 @@ $translations = array(
   'Disabled' =>
     '關閉狀態',
   'Quiz Level' =>
-    '測驗型關卡',
+    '选择型關卡',
   'Show Answer' =>
     '顯示答案',
   'Bonus' =>
-    '紅利',
+    '权重',
   '-Dec' =>
     '-Dec',
   'Save' =>
     '儲存',
   'Quiz Management' =>
-    '測驗管理',
+    '选择管理',
   'Add Quiz Level' =>
-    '增加測驗型關卡',
+    '增加选择型關卡',
   'New Flag Level' =>
     '新增 Flag 型關卡',
   'New Fill in the blanks Level'=>

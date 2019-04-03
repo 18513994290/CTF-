@@ -1642,7 +1642,7 @@ class AdminController extends Controller {
                   <textarea
                     name="question"
                     placeholder={tr('Quiz question')}
-                    rows={4}>
+                    rows={6}>
                   </textarea>
                </div>
                 <!--TODO Quiz-->
@@ -1663,28 +1663,56 @@ class AdminController extends Controller {
                 <div class="form-el fb-column-container col-gutters">
                   <div
                     class=
-                      "form-el--required col col-2-3 el--block-label el--full-text">
+                      "form-el--required col  el--block-label el--full-text">
                     <label>{tr('Answer')}</label>
                     <input name="answer" type="text" />
                   </div>
-                  <div
+                 <!-- <div
                     class=
                       "form-el--required col col-1-3 el--block-label el--full-text">
                     <label>{tr('Points')}</label>
                     <input name="points" type="text" />
                   </div>
+                  <div
+                    class=
+                      "form-el--required col col-1-3 el--block-label el--full-text">
+                    <label>{tr('Bonus')}</label>
+                    <input name="bonus" type="text" />
+                  </div>-->
+               
+                  </div>
+
+	         <div
+                  class=
+                    "form-el form-el--required el--block-label el--full-text">
+                  <label>{tr('Hint Penalty')}</label>
+                  <input
+                    name="penalty"
+                    type="text"
+                    placeholder={tr('Level penalty')}
+                  />
                 </div>
+
+
+
                 <div class="form-el fb-column-container col-gutters">
                   <div class="col col-2-3 el--block-label el--full-text">
                     <label>{tr('Hint')}</label>
                     <input name="hint" type="text" />
                   </div>
-                  <div class="col col-1-3 el--block-label el--full-text">
+                   <div
+                    class=
+                      "form-el--required col col-1-3 el--block-label el--full-text">
+                    <label>{tr('Bonus')}</label>
+                    <input name="bonus" type="text" />
+                  <!--</div>-->
+                  </div> 
+                  <!--<div class="col col-1-3 el--block-label el--full-text">
                     <label>{tr('Hint Penalty')}</label>
                     <input name="penalty" type="text" />
-                  </div>
+                  </div>-->
                 </div>
-                 <!--TODO添加 -->	
+                 <!--TODO添加 -->
               </div>
             </div>
             <div class="admin-buttons admin-row">
@@ -1761,7 +1789,10 @@ class AdminController extends Controller {
       $quiz_id_txt = 'quiz_id'.strval($quiz->getId());
       $countries_select =
         await $this->genGenerateCountriesSelect($quiz->getEntityId()); // TODO: Combine Awaits
-      $delete_button =
+      $level_categories_select =
+        await $this->genGenerateLevelCategoriesSelect($quiz->getCategoryId());
+      
+     $delete_button =
         <div style="display: inline">
           <input type="hidden" name="level_id" value={$quiz_id} />
           <a
@@ -1820,10 +1851,18 @@ class AdminController extends Controller {
                     {$quiz->getDescription()}
                   </textarea>
                 </div>
-                <div class="form-el el--block-label el--full-text">
-                  <label for="">{tr('Country')}</label>
-                  {$countries_select}
+		<!--TODO ALL Quiz-->
+                <div class="form-el fb-column-container col-gutters">
+                  <div class="col col-1-2 el--block-label el--full-text">
+                    <label for="">{tr('Country')}</label>
+                    {$countries_select}
+                  </div>
+                  <div class="col col-1-2 el--block-label el--full-text">
+                    <label for="">{tr('Categories')}</label>
+                    {$level_categories_select}
+                  </div>
                 </div>
+                <!--end-->
               </div>
               <div class="col col-pad col-1-2">
                 <div
@@ -1840,8 +1879,21 @@ class AdminController extends Controller {
                     {tr('Show Answer')}
                   </a>
                 </div>
-                <div class="form-el fb-column-container col-gutters">
-                  <div
+                <!--<div class="form-el fb-column-container col-gutters">-->
+                <div class="col col-pad col-1-2">
+                 <div
+                  class=
+                    "form-el form-el--required el--block-label el--full-text">
+                    <label>{tr('Hint Penalty')}</label>
+                    <input
+                      name="penalty"
+                      type="text"
+                      value={strval($quiz->getPenalty())}
+                      disabled={true}
+                    /> 
+                  </div>
+                <!--注视分数 
+                 <div
                     class=
                       "form-el--required col col-1-3 el--block-label el--full-text">
                     <label>{tr('Points')}</label>
@@ -1862,8 +1914,8 @@ class AdminController extends Controller {
                       value={strval($quiz->getBonus())}
                       disabled={true}
                     />
-                  </div>
-                  <div
+                  </div>-->
+                  <!--<div
                     class=
                       "form-el--required col col-1-3 el--block-label el--full-text">
                     <label>{tr('-Dec')}</label>
@@ -1873,7 +1925,7 @@ class AdminController extends Controller {
                       value={strval($quiz->getBonusDec())}
                       disabled={true}
                     />
-                  </div>
+                  </div>-->
                 </div>
                 <div class="form-el fb-column-container col-gutters">
                   <div class="col col-2-3 el--block-label el--full-text">
@@ -1885,6 +1937,16 @@ class AdminController extends Controller {
                       disabled={true}
                     />
                   </div>
+                  <div class="col col-1-3 el--block-label el--full-text"> 
+                   <label>{tr('Bonus')}</label>
+                    <input
+                      name="bonus"
+                      type="text"
+                      value={strval($quiz->getBonus())}
+                      disabled={true}
+                    />
+                  </div>
+                  <!--
                   <div class="col col-1-3 el--block-label el--full-text">
                     <label>{tr('Hint Penalty')}</label>
                     <input
@@ -1893,7 +1955,7 @@ class AdminController extends Controller {
                       value={strval($quiz->getPenalty())}
                       disabled={true}
                     />
-                  </div>
+                  </div>-->
                 </div>
               </div>
             </div>

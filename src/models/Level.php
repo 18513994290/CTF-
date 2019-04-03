@@ -23,7 +23,7 @@ class Level extends Model implements Importable, Exportable {
     private int $bonus_fix,
     private string $flag,
     private string $hint,
-    private int $penalty,
+    private string $penalty,
     private string $created_ts,
   ) {}
   public function getId(): int {
@@ -65,7 +65,7 @@ class Level extends Model implements Importable, Exportable {
   public function getHint(): string {
     return $this->hint;
   }
-  public function getPenalty(): int {
+  public function getPenalty(): string {
     return $this->penalty;
   }
   public function getCreatedTs(): string {
@@ -86,7 +86,7 @@ class Level extends Model implements Importable, Exportable {
       intval(must_have_idx($row, 'bonus_fix')),
       must_have_idx($row, 'flag'),
       must_have_idx($row, 'hint'),
-      intval(must_have_idx($row, 'penalty')),
+      must_have_idx($row, 'penalty'),
       must_have_idx($row, 'created_ts'),
     );
   }
@@ -320,7 +320,7 @@ class Level extends Model implements Importable, Exportable {
     int $bonus_fix,
     string $flag,
     string $hint,
-    int $penalty,
+    string $penalty,
   ): Awaitable<int> {
     $db = await self::genDb();
     if ($entity_id === 0) {
@@ -331,7 +331,7 @@ class Level extends Model implements Importable, Exportable {
     await $db->queryf(
       'INSERT INTO levels '.
       '(type, title, description, entity_id, category_id, points, bonus, bonus_dec, bonus_fix, flag, hint, penalty, active, created_ts) '.
-      'VALUES (%s, %s, %s, %d, %d, %d, %d, %d, %d, %s, %s, %d, %d, NOW())',
+      'VALUES (%s, %s, %s, %d, %d, %d, %d, %d, %d, %s, %s, %s, %d, NOW())',
       $type,
       $title,
       $description,
@@ -382,7 +382,7 @@ class Level extends Model implements Importable, Exportable {
     int $bonus,
     int $bonus_dec,
     string $hint,
-    int $penalty,
+    string $penalty,
   ): Awaitable<int> {
     return await self::genCreate(
       'flag',
@@ -410,7 +410,7 @@ class Level extends Model implements Importable, Exportable {
     int $bonus,
     int $bonus_dec,
     string $hint,
-    int $penalty,
+    string $penalty,
     int $level_id,
   ): Awaitable<void> {
     await self::genUpdate(
@@ -434,11 +434,11 @@ class Level extends Model implements Importable, Exportable {
     string $question,
     string $answer,
     int $entity_id,
-    int $points,
+    //int $points,
     int $bonus,
-    int $bonus_dec,
+    //int $bonus_dec,
     string $hint,
-    int $penalty,
+    string $penalty,
   ): Awaitable<int> {
     $db = await self::genDb();
     $result = await $db->queryf(
@@ -452,9 +452,11 @@ class Level extends Model implements Importable, Exportable {
       $question,
       $entity_id,
       $category_id,
-      $points,
+      //$points,
+      0,
       $bonus,
-      $bonus_dec,
+      //$bonus_dec,
+      0,
       $bonus,
       $answer,
       $hint,
@@ -467,11 +469,11 @@ class Level extends Model implements Importable, Exportable {
     string $question,
     string $answer,
     int $entity_id,
-    int $points,
+    //int $points,
     int $bonus,
-    int $bonus_dec,
+    //int $bonus_dec,
     string $hint,
-    int $penalty,
+    string $penalty,
     int $level_id,
   ): Awaitable<void> {
     $db = await self::genDb();
@@ -485,10 +487,13 @@ class Level extends Model implements Importable, Exportable {
       $question,
       $entity_id,
       $category_id,
-      $points,
+      //$points,
+      0,
       $bonus,
-      $bonus_dec,
-      $bonus,
+      //$bonus_dec,
+      0,
+      //$bonus,
+      0,
       $answer,
       $hint,
       $penalty,
@@ -504,7 +509,7 @@ class Level extends Model implements Importable, Exportable {
     int $points,
     int $bonus,
     string $hint,
-    int $penalty,
+    string $penalty,
   ): Awaitable<int> {
     return await self::genCreate(
       'base',
@@ -530,7 +535,7 @@ class Level extends Model implements Importable, Exportable {
     int $points,
     int $bonus,
     string $hint,
-    int $penalty,
+    string $penalty,
     int $level_id,
   ): Awaitable<void> {
     await self::genUpdate(
@@ -560,7 +565,7 @@ class Level extends Model implements Importable, Exportable {
     int $bonus_fix,
     string $flag,
     string $hint,
-    int $penalty,
+    string $penalty,
     int $level_id,
   ): Awaitable<void> {
     $db = await self::genDb();
@@ -573,7 +578,7 @@ class Level extends Model implements Importable, Exportable {
       await $db->queryf(
         'UPDATE levels SET title = %s, description = %s, entity_id = %d, category_id = %d, points = %d, '.
         'bonus = %d, bonus_dec = %d, bonus_fix = %d, flag = %s, hint = %s, '.
-        'penalty = %d WHERE id = %d LIMIT 1',
+        'penalty = %s WHERE id = %d LIMIT 1',
         $title,
         $description,
         $ent_id,

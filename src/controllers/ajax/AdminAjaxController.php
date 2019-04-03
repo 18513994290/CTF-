@@ -58,7 +58,7 @@ class AdminAjaxController extends AjaxController {
         'points' => FILTER_VALIDATE_INT,
         'bonus' => FILTER_VALIDATE_INT,
         'bonus_dec' => FILTER_VALIDATE_INT,
-        'penalty' => FILTER_VALIDATE_INT,
+        'penalty' => FILTER_UNSAFE_RAW,
         'active' => FILTER_VALIDATE_INT,
         'field' => FILTER_UNSAFE_RAW,
         'value' => FILTER_UNSAFE_RAW,
@@ -173,11 +173,11 @@ class AdminAjaxController extends AjaxController {
           must_have_string($params, 'question'),
           must_have_string($params, 'answer'),
           must_have_int($params, 'entity_id'),
-          must_have_int($params, 'points'),
+          // must_have_int($params, 'points'),
           intval($bonus),
-          intval($bonus_dec),
+         // intval($bonus_dec),
           must_have_string($params, 'hint'),
-          intval(must_have_idx($params, 'penalty')),
+          must_have_string($params, 'penalty'),
         );
         }catch(Exception $e){
                  $file  = '/var/www/fbctf/src/log.txt';
@@ -187,18 +187,26 @@ class AdminAjaxController extends AjaxController {
         }
         return Utils::ok_response('Created succesfully', 'admin');
       case 'update_quiz':
+        try{
         await Level::genUpdateQuiz(
           must_have_string($params, 'title'),
           must_have_string($params, 'question'),
           must_have_string($params, 'answer'),
           must_have_int($params, 'entity_id'),
-          must_have_int($params, 'points'),
+         // must_have_int($params, 'points'),
           must_have_int($params, 'bonus'),
-          must_have_int($params, 'bonus_dec'),
+          //must_have_int($params, 'bonus_dec'),
           must_have_string($params, 'hint'),
-          intval(must_have_idx($params, 'penalty')),
+          //intval(must_have_idx($params, 'penalty')),
+          must_have_string($params,'penalty'),
           must_have_int($params, 'level_id'),
         );
+        }catch(Exception $e){
+        //error message
+         $errorMsg = 'update_quiz 的Error on line '.$e->getLine().' in '.$e->getFile().'Message:'.$e->getMessage();
+         $file="/var/www/fbctf/src/log.txt";
+         file_put_contents($file,$errorMsg.PHP_EOL, FILE_APPEND);
+        }
         return Utils::ok_response('Updated succesfully', 'admin');
       case 'create_flag':
         $bonus = $default_bonus->getValue();
