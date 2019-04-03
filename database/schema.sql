@@ -46,7 +46,7 @@ CREATE TABLE `levels` (
   `bonus_fix` int(11) NOT NULL,
   `flag` text NOT NULL,
   `hint` text NOT NULL,
-  `penalty` int(11) NOT NULL,
+  `penalty` text NOT NULL,
   `created_ts` timestamp NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `entity_id` (`entity_id`),
