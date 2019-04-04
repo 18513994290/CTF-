@@ -372,7 +372,7 @@ $translations = array(
   'Add Quiz Level' =>
     '增加选择型關卡',
   'New Flag Level' =>
-    '新增 Flag 型關卡',
+    '新增填空 型關卡',
   'New Fill in the blanks Level'=>
   '新增填空型關卡',
   'Description' =>
@@ -386,7 +386,7 @@ $translations = array(
   'flag' =>
     '旗標',
   'All Flag Levels' =>
-    '所有旗標型關卡',
+    '所有填空型關卡',
   'All Fill in the blanks Levels'=>
   '所有填空型關卡',
   'New Attachment:' =>
@@ -398,7 +398,7 @@ $translations = array(
   'New Link:' =>
     '新增連結：',
   'Flag Level' =>
-    '旗標關卡',
+    '填空關卡',
   'Fill in the blanks Level'=>
   '填空關卡',
   'Categories' =>
@@ -408,9 +408,9 @@ $translations = array(
   '+ Link' =>
     '+ 連結',
   'Flags Management' =>
-    '旗標管理',
+    '填空管理',
   'Add Flag Level' =>
-    '增加旗標型關卡',
+    '增加填空型關卡',
   'Add Fill in the blanks Level' =>
     '增加填空型關卡',
   'New Base Level' =>

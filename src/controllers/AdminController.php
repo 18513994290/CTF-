@@ -2030,7 +2030,7 @@ class AdminController extends Controller {
                   <textarea
                     name="description"
                     placeholder={tr('Level description')}
-                    rows={4}>
+                    rows={6}>
                   </textarea>
                 </div>
                 <div
@@ -2050,26 +2050,32 @@ class AdminController extends Controller {
                 <div class="form-el fb-column-container col-gutters">
                   <div
                     class=
-                      "form-el--required col col-2-3 el--block-label el--full-text">
-                    <label>{tr('Flag')}</label>
+                      "form-el--required col  el--block-label el--full-text">
+                    <label>{tr('Answer')}</label>
                     <input name="flag" type="text" />
                   </div>
+                  <!--
                   <div
                     class=
                       "form-el--required col col-1-3 el--block-label el--full-text">
                     <label>{tr('Points')}</label>
                     <input name="points" type="text" />
-                  </div>
+                  </div>-->
                 </div>
                 <div class="form-el fb-column-container col-gutters">
-                  <div class="col col-2-3 el--block-label el--full-text">
+                  <div class="col  el--block-label el--full-text">
                     <label>{tr('Hint')}</label>
                     <input name="hint" type="text" />
                   </div>
+		  <div class="col col-1-3 el--block-label el--full-text">
+                    <label>{tr('Bonus')}</label>
+                    <input name="bonus" type="text" />
+                  </div>
+		  <!--	
                   <div class="col col-1-3 el--block-label el--full-text">
                     <label>{tr('Hint Penalty')}</label>
                     <input name="penalty" type="text" />
-                  </div>
+                  </div>-->
                 </div>
               </div>
             </div>
@@ -2390,7 +2396,7 @@ class AdminController extends Controller {
                   <div
                     class=
                       "form-el--required col el--block-label el--full-text">
-                    <label>{tr('Flag')}</label>
+                    <label>{tr('Answer')}</label>
                     <input
                       name="flag"
                       type="password"
@@ -2403,7 +2409,7 @@ class AdminController extends Controller {
                   </div>
                 </div>
                 <div class="form-el fb-column-container col-gutters">
-                  <div
+                  <!--<div
                     class=
                       "form-el--required col col-1-3 el--block-label el--full-text">
                     <label>{tr('Points')}</label>
@@ -2435,7 +2441,7 @@ class AdminController extends Controller {
                       value={strval($flag->getBonusDec())}
                       disabled={true}
                     />
-                  </div>
+                  </div>-->
                 </div>
                 <div class="form-el fb-column-container col-gutters">
                   <div class="col col-2-3 el--block-label el--full-text">
@@ -2448,6 +2454,15 @@ class AdminController extends Controller {
                     />
                   </div>
                   <div class="col col-1-3 el--block-label el--full-text">
+                    <label>{tr('Bonus')}</label>
+                    <input
+                      name="bonus"
+                      type="text"
+                      value={strval($flag->getBonus())}
+                      disabled={true}
+                    />
+		  </div>
+                 <!-- <div class="col col-1-3 el--block-label el--full-text">
                     <label>{tr('Hint Penalty')}</label>
                     <input
                       name="penalty"
@@ -2455,7 +2470,7 @@ class AdminController extends Controller {
                       value={strval($flag->getPenalty())}
                       disabled={true}
                     />
-                  </div>
+                  </div>-->
                 </div>
               </div>
             </div>
@@ -2472,6 +2487,7 @@ class AdminController extends Controller {
                 {tr('Save')}
               </button>
             </div>
+           <!--
             <div class="button-left">
               <button class="fb-cta" data-action="add-attachment">
                 {tr('+ Attachment')}
@@ -2479,7 +2495,7 @@ class AdminController extends Controller {
               <button class="fb-cta" data-action="add-link">
                 {tr('+ Link')}
               </button>
-            </div>
+            </div>-->
           </div>
         </section>
       );

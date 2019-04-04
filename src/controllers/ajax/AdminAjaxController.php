@@ -209,20 +209,23 @@ class AdminAjaxController extends AjaxController {
         }
         return Utils::ok_response('Updated succesfully', 'admin');
       case 'create_flag':
-        $bonus = $default_bonus->getValue();
-        $bonus_dec = $default_bonusdec->getValue();
-        await Level::genCreateFlag(
+       
+       try{
+         await Level::genCreateFlag(
           must_have_string($params, 'title'),
           must_have_string($params, 'description'),
           must_have_string($params, 'flag'),
           must_have_int($params, 'entity_id'),
           must_have_int($params, 'category_id'),
-          must_have_int($params, 'points'),
-          intval($bonus),
-          intval($bonus_dec),
+          intval(must_have_int($params, 'bonus')),
           must_have_string($params, 'hint'),
-          intval(must_have_idx($params, 'penalty')),
-        );
+         );
+	 }catch(Exception $e){
+        //error message
+         $errorMsg = json_encode($params).'create_flag 的Error on line '.$e->getLine().' in '.$e->getFile().'Message:'.$e->getMessage();
+         $file="/var/www/fbctf/src/log.txt";
+         file_put_contents($file,$errorMsg.PHP_EOL, FILE_APPEND);
+        }	
         return Utils::ok_response('Created succesfully', 'admin');
       case 'update_flag':
         await Level::genUpdateFlag(
@@ -231,11 +234,8 @@ class AdminAjaxController extends AjaxController {
           must_have_string($params, 'flag'),
           must_have_int($params, 'entity_id'),
           must_have_int($params, 'category_id'),
-          must_have_int($params, 'points'),
           must_have_int($params, 'bonus'),
-          must_have_int($params, 'bonus_dec'),
           must_have_string($params, 'hint'),
-          intval(must_have_idx($params, 'penalty')),
           must_have_int($params, 'level_id'),
         );
         return Utils::ok_response('Updated succesfully', 'admin');

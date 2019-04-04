@@ -1,5 +1,0 @@
-update_quiz 的Error on line 19 in /var/www/fbctf/src/Utils.phpMessage:Expected penalty to be a string
-update_quiz 的Error on line 19 in /var/www/fbctf/src/Utils.phpMessage:Expected penalty to be a string
-update_quiz 的Error on line 19 in /var/www/fbctf/src/Utils.phpMessage:Expected penalty to be a string
-update_quiz 的Error on line 19 in /var/www/fbctf/src/Utils.phpMessage:Expected penalty to be a string
-Message: Index points not found in containerline:10 in /var/www/fbctf/src/Utils.php

@@ -371,18 +371,15 @@ class Level extends Model implements Importable, Exportable {
     ActivityLog::invalidateMCRecords('ALL_ACTIVITY');
     return intval(must_have_idx($result->mapRows()[0], 'id'));
   }
-  // Create a flag level.
+  // Create a flag level. 填空题
   public static async function genCreateFlag(
     string $title,
     string $description,
     string $flag,
     int $entity_id,
     int $category_id,
-    int $points,
     int $bonus,
-    int $bonus_dec,
     string $hint,
-    string $penalty,
   ): Awaitable<int> {
     return await self::genCreate(
       'flag',
@@ -390,13 +387,13 @@ class Level extends Model implements Importable, Exportable {
       $description,
       $entity_id,
       $category_id,
-      $points,
+      0,
       $bonus,
-      $bonus_dec,
-      $bonus,
+      0,
+      0,
       $flag,
       $hint,
-      $penalty,
+      '',
     );
   }
   // Update a flag level.
@@ -406,11 +403,8 @@ class Level extends Model implements Importable, Exportable {
     string $flag,
     int $entity_id,
     int $category_id,
-    int $points,
     int $bonus,
-    int $bonus_dec,
     string $hint,
-    string $penalty,
     int $level_id,
   ): Awaitable<void> {
     await self::genUpdate(
@@ -418,13 +412,17 @@ class Level extends Model implements Importable, Exportable {
       $description,
       $entity_id,
       $category_id,
-      $points,
+     // $points,
+      0,
       $bonus,
-      $bonus_dec,
-      $bonus,
+      //$bonus_dec,
+      0,
+     // $bonus,
+      0,
       $flag,
       $hint,
-      $penalty,
+      //$penalty,
+      '',
       $level_id,
     );
   }
