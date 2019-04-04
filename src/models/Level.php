@@ -504,10 +504,9 @@ class Level extends Model implements Importable, Exportable {
     string $description,
     int $entity_id,
     int $category_id,
-    int $points,
     int $bonus,
+    string $flag,
     string $hint,
-    string $penalty,
   ): Awaitable<int> {
     return await self::genCreate(
       'base',
@@ -515,13 +514,16 @@ class Level extends Model implements Importable, Exportable {
       $description,
       $entity_id,
       $category_id,
-      $points,
-      $bonus,
+      //$points,
       0,
       $bonus,
-      '',
+      0,
+      //$bonus,
+      0,
+      $flag,
       $hint,
-      $penalty,
+      //$penalty,
+      '',
     );
   }
   // Update a base level.
@@ -530,10 +532,11 @@ class Level extends Model implements Importable, Exportable {
     string $description,
     int $entity_id,
     int $category_id,
-    int $points,
+    //int $points,
     int $bonus,
+    string $flag,
     string $hint,
-    string $penalty,
+    //string $penalty,
     int $level_id,
   ): Awaitable<void> {
     await self::genUpdate(
@@ -541,13 +544,16 @@ class Level extends Model implements Importable, Exportable {
       $description,
       $entity_id,
       $category_id,
-      $points,
-      $bonus,
+      //$points,
       0,
       $bonus,
-      '',
+      0,
+      //$bonus,
+      0,
+      $flag,
       $hint,
-      $penalty,
+      //$penalty,
+      '',
       $level_id,
     );
   }

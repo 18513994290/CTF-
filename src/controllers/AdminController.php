@@ -2572,18 +2572,26 @@ class AdminController extends Controller {
               </div>
               <div class="col col-pad col-1-2">
                 <div class="form-el fb-column-container col-gutters">
+                   <div
+                    class=
+                      "form-el--required col  el--block-label el--full-text">
+                    <label>{tr('Answer')}</label>
+                    <input name="flag" type="text" />
+                  </div>
+                   <!--
                   <div
                     class=
                       "form-el--required col col-1-2 el--block-label el--full-text">
                     <label>{tr('Keep Points')}</label>
                     <input name="points" type="text" />
                   </div>
+                  
                   <div
                     class=
                       "form-el--required col col-1-2 el--block-label el--full-text">
                     <label>{tr('Capture points')}</label>
                     <input name="bonus" type="text" />
-                  </div>
+                  </div>-->
                 </div>
                 <div class="form-el fb-column-container col-gutters">
                   <div class="col col-2-3 el--block-label el--full-text">
@@ -2591,9 +2599,14 @@ class AdminController extends Controller {
                     <input name="hint" type="text" />
                   </div>
                   <div class="col col-1-3 el--block-label el--full-text">
+                    <label>{tr('Bonus')}</label>
+                    <input name="bonus" type="text" />
+                  </div>
+                  <!--
+                  <div class="col col-1-3 el--block-label el--full-text">
                     <label>{tr('Hint Penalty')}</label>
                     <input name="penalty" type="text" />
-                  </div>
+                  </div>-->
                 </div>
               </div>
             </div>
@@ -2917,7 +2930,7 @@ class AdminController extends Controller {
               </div>
               <div class="col col-pad col-1-2">
                 <div class="form-el fb-column-container col-gutters">
-                  <div
+                  <!--<div
                     class=
                       "form-el--required col col-1-2 el--block-label el--full-text">
                     <label>{tr('Points')}</label>
@@ -2936,7 +2949,16 @@ class AdminController extends Controller {
                       value={strval($base->getBonus())}
                       disabled={true}
                     />
-                  </div>
+                  </div>-->
+		   <div class="col  el--block-label el--full-text">
+                    <label>{tr('Answer')}</label>
+                    <input
+                      name="flag"
+                      type="text"
+                      value={strval($base->getFlag())}
+                      disabled={true}
+                    />
+                  </div>	
                 </div>
                 <div class="form-el fb-column-container col-gutters">
                   <div class="col col-1-2 el--block-label el--full-text">
@@ -2948,12 +2970,22 @@ class AdminController extends Controller {
                       disabled={true}
                     />
                   </div>
+                 <!--
                   <div class="col col-1-2 el--block-label el--full-text">
                     <label>{tr('Hint Penalty')}</label>
                     <input
                       name="penalty"
                       type="text"
                       value={strval($base->getPenalty())}
+                      disabled={true}
+                    />
+                  </div>-->
+		  <div class="col col-1-2 el--block-label el--full-text">
+                    <label>{tr('Bonus')}</label>
+                    <input
+                      name="bonus"
+                      type="text"
+                      value={strval($base->getBonus())}
                       disabled={true}
                     />
                   </div>
@@ -2973,6 +3005,7 @@ class AdminController extends Controller {
                 {tr('Save')}
               </button>
             </div>
+            <!--
             <div class="button-left">
               <button class="fb-cta" data-action="add-attachment">
                 {tr('+ Attachment')}
@@ -2980,7 +3013,7 @@ class AdminController extends Controller {
               <button class="fb-cta" data-action="add-link">
                 {tr('+ Link')}
               </button>
-            </div>
+            </div>-->
           </div>
         </section>
       );

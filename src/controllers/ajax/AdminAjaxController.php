@@ -246,10 +246,9 @@ class AdminAjaxController extends AjaxController {
           must_have_string($params, 'description'),
           must_have_int($params, 'entity_id'),
           must_have_int($params, 'category_id'),
-          must_have_int($params, 'points'),
           must_have_int($params, 'bonus'),
+          must_have_string($params, 'flag'),
           must_have_string($params, 'hint'),
-          intval(must_have_idx($params, 'penalty')),
         );
         return Utils::ok_response('Created succesfully', 'admin');
       case 'update_base':
@@ -258,10 +257,11 @@ class AdminAjaxController extends AjaxController {
           must_have_string($params, 'description'),
           must_have_int($params, 'entity_id'),
           must_have_int($params, 'category_id'),
-          must_have_int($params, 'points'),
+          //must_have_int($params, 'points'),
           must_have_int($params, 'bonus'),
+          must_have_string($params, 'flag'),
           must_have_string($params, 'hint'),
-          intval(must_have_idx($params, 'penalty')),
+          //intval(must_have_idx($params, 'penalty')),
           must_have_int($params, 'level_id'),
         );
         return Utils::ok_response('Updated succesfully', 'admin');
