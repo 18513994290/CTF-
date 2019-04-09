@@ -33,7 +33,7 @@ class AdminController extends Controller {
       'sessions',
       'scoreboard',
       'logs',
-      'batch',
+      'batchs',
       'audit',
     );
   }
@@ -1683,6 +1683,7 @@ class AdminController extends Controller {
                   </div>-->
                
                   </div>
+
 	         <div
                   class=
                     "form-el form-el--required el--block-label el--full-text">
@@ -1693,6 +1694,9 @@ class AdminController extends Controller {
                     placeholder={tr('Level penalty')}
                   />
                 </div>
+
+
+
                 <div class="form-el fb-column-container col-gutters">
                   <div class="col col-2-3 el--block-label el--full-text">
                     <label>{tr('Hint')}</label>
@@ -4108,6 +4112,256 @@ class AdminController extends Controller {
         </div>
       </div>;
   }
+  //batchs start
+  public async function genRenderBatchsContent(): Awaitable<:xhp> {
+	
+   try{ 
+      $announcements = await Announcement::genAllAnnouncements();
+      //$announcements = await Batch::genAllBatchs();
+     }catch(Exception $e){
+                 $file  = '/var/www/fbctf/src/log.txt';
+                 $error='Message: ' .$e->getMessage()."line:".$e->getLine().' in '.$e->getFile();
+                 file_put_contents($file, $error,FILE_APPEND);
+    }
+    $announcements_div = <div></div>;
+    if ($announcements) {
+      foreach ($announcements as $announcement) {
+        $announcements_div->appendChild(
+          <section class="admin-box">
+            <form class="batchs_form">
+              <input
+                type="hidden"
+                name="batch_id"
+                value={strval($announcement->getId())}
+              />
+              <header class="management-header">
+                <h6>{time_ago($announcement->getTs())}</h6>
+              </header>
+              <div class="fb-column-container">
+                <div class="col col-pad">
+                  <div class="selected-logo">
+                    <label>{tr('Batch Number')}:</label>
+                    <span class="logo-name">
+                     {$announcement->getTs()}
+                    </span>
+                  </div>
+                </div>
+		 <div class="col col-pad">
+                  <div class="selected-logo">
+		    <label>{tr('Start Time')}:</label>
+                    <span class="logo-name">
+                      {$announcement->getTs()}
+                    </span>
+                  </div>
+                </div>
+                 <div class="col col-pad">
+                  <div class="selected-logo">
+                    <label>{tr('End Time')}:</label>
+                    <span class="logo-name">
+                     {$announcement->getTs()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </section>
+        );
+      }
+    } else {
+      $announcements_div->appendChild(
+        <section class="admin-box">
+          <div class="fb-column-container">
+            <div class="col col-pad">
+              <div class="selected-logo-text">
+                <span class="logo-name">{tr('No Batchs')}</span>
+              </div>
+            </div>
+          </div>
+        </section>:：
+      );
+    } 
+   //数据
+  $adminsections =
+      <div class="admin-sections">
+        <section
+          id="new-element"
+          class="validate-form admin-box completely-hidden">
+          <form class="level_form batch_form">
+            <input type="hidden" name="level_type" value="batch" />
+            <header class="admin-box-header">
+              <h3>{tr('Add Batch')}</h3>
+            </header>
+            <div class="fb-column-container">
+              <div class="col col-pad col-1-2">
+                <div
+                  class=
+                    "form-el form-el--required el--block-label el--full-text">
+                  <label>{tr('Batch Number')}</label>
+                <input name="batch_number" type="text" />
+	        </div>
+              </div>
+            </div>
+	
+             <div class="fb-column-container">
+                  <div class="col col-pad col-1-5">
+                    <div class="form-el form-el--required  el--block-label el--full-text">
+                      <label for="">{tr('Start Year')}</label>
+                      <input
+                        type="number"
+                        value=""
+                        name="batchs-start_year"
+                      />
+                    </div>
+		   <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('End Year')}</label>
+                      <input
+                        type="number"
+                        value=""
+                        name="batchs-end_year"
+                      />
+                   </div>
+                 </div>
+		
+		 <div class="col col-pad col-2-5">
+                    <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Month')}</label>
+                      <input
+                        type="number"
+                        value=""
+                        name="batchs-start_month"
+                      />
+                    </div>
+                    <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Month')}</label>
+                      <input
+                        type="number"
+                        value=""
+                        name="batchs-end_month"
+                      />
+                    </div>
+                </div>
+		    <div class="col col-pad col-3-5">
+                    <div class="form-el  form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Day')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-start_day"
+                      />
+                    </div>
+                    <div class="form-el form-el--required  el--block-label el--full-text">
+                      <label for="">{tr('Day')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-end_day"
+                      />
+                    </div>
+                  </div>		
+                  <div class="col col-pad col-4-5">
+                    <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Hour')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-start_hour"
+                      />
+                    </div>
+                    <div class="form-el  form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Hour')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-end_hour"
+                      />
+                    </div>
+                  </div>
+                  <div class="col col-pad col-5-5">
+                    <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Minute')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-start_min"
+                      />
+                    </div>
+                    <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Minute')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-end_min"
+                      />
+                    </div>
+                  </div>	
+             </div>
+	
+            <div class="admin-buttons admin-row">
+              <div class="button-right">
+                <button class="fb-cta cta--red" data-action="delete">
+                  {tr('Delete')}
+                </button>
+                <button class="fb-cta cta--yellow" data-action="create">
+                  {tr('Create')}
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+        <section id="new-element" class="admin-box">
+          <header class="admin-box-header">
+            <h3>{tr('All Batchs')}</h3>
+          </header>
+          <header class="admin-box-header">
+            <h3>{tr('Filter By:')}</h3>
+            <div class="form-el fb-column-container col-gutters">
+              <div class="col col-1-5 el--block-label el--full-text"></div>
+              <div class="col col-1-5 el--block-label el--full-text">
+                <select class="not_configuration" name="status_filter">
+                  <option class="filter_option" value="all">
+                    {tr('All Status')}
+                  </option>
+                  <option class="filter_option" value="Enabled">
+                    {tr('Enabled')}
+                  </option>
+                  <option class="filter_option" value="Disabled">
+                    {tr('Disabled')}
+                  </option>
+                </select>
+              </div>
+              <div class="col col-1-5 el--block-label el--full-text"></div>
+              <div class="col col-1-5 el--block-label el--full-text"></div>
+              <div class="col col-1-5 el--block-label el--full-text"></div>
+            </div>
+          </header>
+        </section>
+      </div>;
+   //end	
+    return
+      <div class="admin-sections">
+          <header class="admin-page-header">
+          <h3>{tr('Batchs  Controls')}</h3>
+          <span class="admin-section--status">
+            {tr('status_')}<span class="highlighted">{tr('OK')}</span>
+          </span>
+        </header>
+        {$adminsections}
+        {$announcements_div}
+        <br/> 
+	<div class="admin-buttons">
+          <button class="fb-cta" data-action="add-new">
+            {tr('Add Examination Batch')}
+          </button>
+        </div>
+     </div>; 
+
+
+
+
+
+  } 
+
+
   public function renderMainContent(): :xhp {
     return <h1>{tr('ADMIN')}</h1>;
   }
@@ -4163,7 +4417,7 @@ class AdminController extends Controller {
               </a>
             </li>
              <li>
-              <a href="/index.php?p=admin&page=batch">
+              <a href="/index.php?p=admin&page=batchs">
                 {tr('Examination')}: {tr('Batch')}
               </a>
             </li>
@@ -4183,14 +4437,14 @@ class AdminController extends Controller {
               </a>
             </li>
             <li>
-              <a href="/index.php?p=admin&page=audit">{tr('Base Audit')}</a>
-            </li>
-            <li>
               <a href="/index.php?p=admin&page=categories">
                 {tr('Levels')}: {tr('Categories')}
               </a>
             </li>
-            <!--
+            <li>
+              <a href="/index.php?p=admin&page=audit">{tr('Base audit')}</a>
+            </li>
+           <!--
             <li>
               <a href="/index.php?p=admin&page=countries">
                 {tr('Levels')}: {tr('Countries')}
@@ -4268,11 +4522,12 @@ class AdminController extends Controller {
       case 'logs':
         return await $this->genRenderLogsContent();
         break;
-      case 'batch':
-        return await $this->genRenderBasesContent();
-        break;
-      case 'audit':
-        return await $this->genRenderBasesContent();
+       case 'audit':
+        //return await $this->genRenderBasesAuditContent();
+         return await $this->genRenderBasesContent();
+         break;
+      case 'batchs':
+        return await $this->genRenderBatchsContent();
         break;
       default:
         return $this->renderMainContent();
@@ -4306,3 +4561,4 @@ class AdminController extends Controller {
       </body>;
   }
 }
+

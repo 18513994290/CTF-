@@ -1,15 +1,5 @@
 <?hh // strict
 class Batch extends Modal{
-    protected static string $MC_KEY = 'batch:';
-    protected static Map<string, string>
-    $MC_KEYS = Map {
-    'ALL_BATCHS' => 'all_batchs',
-    'ALL_BATCHS_BY_ID' => 'all_batch_by_id',
-    'ALL_BATCHS_FOR_MAP' => 'all_batchs_for_map',
-    'ALL_ENABLED_BATCHS' => 'all_enabled_batchs',
-    'ALL_ENABLED_BATCHS_FOR_MAP' => 'all_enabled_batchs_for_map',
-    'BATCHEXISTSE'=>'Batch_Exists',
-    };
     private function __construct(
         private int $id,
         private string $batch_number,
@@ -18,17 +8,13 @@ class Batch extends Modal{
         private int  $enabled,
         private int  $status,
         private string $create_ts,
-
       ) {}
-
-  public function getId(): int {
-    return $this->id;
+     public function getId(): int {
+      return $this->id;
     }
-
   public function getEnabled(): bool {
     return $this->enabled === 1;
     }
-
       public function getBatchnumber(): string {
         return $this->batch_number;
     }
@@ -42,11 +28,11 @@ class Batch extends Modal{
         return $this->create_ts;
     }
     public function getStatus(): string {
-        return $this->status;
+        return $this->status;    
+   }
+    public function getTs(): string {
+        return $this->create_ts;
     }
-     //get all batch
-
-    //form
     private static function BatchFromRow(
         Map<string, string> $row,
         ):Batch{
@@ -60,36 +46,14 @@ class Batch extends Modal{
         );
     }
 
-  // All batchs.
-  public static async function genAllBatchs(
-    bool $refresh = false,
-  ): Awaitable<array<Batch>> {
-    $mc_result = self::getMCRecords('ALL_BATCHS');
-    if (!$mc_result || count($mc_result) === 0 || $refresh) {
-      $db = await self::genDb();
-      $all_batchs = Map {};
-      $result = await $db->queryf('SELECT * FROM batchs ORDER BY id');
-      foreach ($result->mapRows() as $row) {
-          $all_batchs->add(
-              Pair {intval($row->get('id')), self::BatchFromRow($row)},
-        );
-      }
-      self::setMCRecords('ALL_BATCHS', new Map($all_batchs));
-      $batchs = array();
-      $batchs = $all_batchs->toValuesArray();
-      return $batchs;
-    } else {
-        $batchs = array();
-        invariant(
-            $mc_result instanceof Map,
-            'cache return should be of type Map',
-      );
-        $batchs = $mc_result->toValuesArray();
-        return $batchs;
-        }
-    }
+	
+
+    // All batchs.
+  public static async function genAllBatchs(){
+   return true;
+  }
    //create batchs
-    public static async function genCreate(
+   public static async function genBatchCreate(
          string $batch_number,
          string $start_ts,
          string $end_ts,
@@ -101,18 +65,8 @@ class Batch extends Modal{
                 $batch_number,
         );
     self::invalidateMCRecords(); // Invalidate Memcached ActivityLog data.
-  }
- 
- //test
-  public static async function test(){
-     /**
-       $db = await self::genDb();
-      $all_batchs=await $db->queryf('SELECT * FROM batchs ORDER BY id DESC LIMIT 1'); 
-      $batchs = $all_batchs->toValuesArray();
-      return $batchs; 
-   */
-   return false;
-  }
+  }	
+
 
 
 }

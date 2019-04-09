@@ -23,6 +23,8 @@ $translations = array(
     '立即註冊隊伍並準備開始進行 CTF！',
   'Login' =>
     '登入',
+  'Base Audit'=>
+  '问答审核',
   'Account'=>
   '帐号',
   'switch' =>

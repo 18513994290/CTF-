@@ -240,16 +240,21 @@ class AdminAjaxController extends AjaxController {
         );
         return Utils::ok_response('Updated succesfully', 'admin');
       case 'create_base':
-        $bonus = $default_bonus->getValue();
-        await Level::genCreateBase(
-          must_have_string($params, 'title'),
-          must_have_string($params, 'description'),
-          must_have_int($params, 'entity_id'),
-          must_have_int($params, 'category_id'),
-          must_have_int($params, 'bonus'),
-          must_have_string($params, 'flag'),
-          must_have_string($params, 'hint'),
+         try{	await Level::genCreateBase(
+          	must_have_string($params, 'title'),
+          	must_have_string($params, 'description'),
+          	must_have_int($params, 'entity_id'),
+          	must_have_int($params, 'category_id'),
+         	must_have_int($params, 'bonus'),
+          	must_have_string($params, 'flag'),
+          	must_have_string($params, 'hint'),
         );
+       	}catch(Exception $e){
+                 $file  = '/var/www/fbctf/src/log.txt';
+               
+		 $error='Message: ' .$e->getMessage()."line:".$e->getLine().' in '.$e->getFile();
+		 file_put_contents($file, $error,FILE_APPEND);
+	}
         return Utils::ok_response('Created succesfully', 'admin');
       case 'update_base':
         await Level::genUpdateBase(

@@ -21695,7 +21695,8 @@ function updateElement(section) {
 // Generic create
 function createElement(section) {
   var elementSection = $('form', section)[0].classList[0];
-  if (elementSection === 'team_form') {
+  console.log(elementSection) 
+ if (elementSection === 'team_form') {
     createTeam(section);
   } else if (elementSection === 'level_form') {
     createLevel(section);
@@ -21976,6 +21977,10 @@ function createLevel(section) {
       break;
   }
 }
+ //小于10前面加零
+ function number(){
+
+ }
 //Create Batch
 function createBatchs(section){
  console.log('创建Batch')
@@ -22764,7 +22769,7 @@ module.exports = {
         });
       });
     });
-
+    
     // prompt logout
     $('.js-prompt-logout').on('click', function (event) {
       event.preventDefault();
