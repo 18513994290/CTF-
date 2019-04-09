@@ -1324,7 +1324,7 @@ class AdminController extends Controller {
         <section
           id="new-element"
           class="validate-form admin-box completely-hidden">
-          <form class="level_form batch_form">
+          <form class="batch_form">
             <input type="hidden" name="level_type" value="batch" />
             <header class="admin-box-header">
               <h3>{tr('Add Batch')}</h3>

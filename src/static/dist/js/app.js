@@ -21691,18 +21691,47 @@ function updateElement(section) {
     updateLevel(section);
   }
 }
+//Create Batch
+function createBatch(section){
+ console.log('创建Batch')
+ var batch_number = $('.batch_form input[name=batch_number]', section)[0].value;
+ var start_year= $('.batch_form input[name=batchs-start_year]', section)[0].value;
+ var end_year = $('.batch_form input[name=batchs-end_year]', section)[0].value;
+ var start_month = $('.batch_form input[name=batchs-start_month]', section)[0].value;
+ var end_month = $('.batch_form input[name=batchs-end_month]', section)[0].value;
+ var start_day = $('.batch_form input[name=batchs-start_day]', section)[0].value;
+ var end_day = $('.batch_form input[name=batchs-end_day]', section)[0].value;
+ var start_hour= $('.batch_form input[name=batchs-start_hour]', section)[0].value;
+ var end_hour = $('.batch_form input[name=batchs-end_day]', section)[0].value;
+ var start_min = $('.batch_form input[name=batchs-start_min]', section)[0].value;
+ var end_min = $('.batch_form input[name=batchs-end_min]', section)[0].value;
+ console.log(batch_number)
+ var start_time =start_year+'-'+ number_format(start_month)+'-'+number_format(start_day)+' '+number_format(start_hour)+':'+(start_min)+':00'
+ var end_time   =end_year+'-'+number_format(end_month)+'-'+number_format(end_day)+' '+number_format(end_hour)+':'+number_format(end_min)+':00'
+ console.log(start_time)
+ console.log(end_time)
+  var create_data = {
+    action: 'create_batch',
+    batch_number: batch_number,
+    start_ts:start_time,
+    end_ts:end_time
+  };
+  sendAdminRequest(create_data, true);
+}
 
 // Generic create
 function createElement(section) {
   var elementSection = $('form', section)[0].classList[0];
-  console.log(elementSection) 
  if (elementSection === 'team_form') {
     createTeam(section);
   } else if (elementSection === 'level_form') {
     createLevel(section);
   } else if (elementSection === 'categories_form') {
     createCategory(section);
+  } else if (elementSection ==='batch_form'){
+    createBatch(section);
   }
+  console.log(section)
 }
 
 // Create announcement
@@ -21978,8 +22007,10 @@ function createLevel(section) {
   }
 }
  //小于10前面加零
- function number(){
-
+ function number_format(num){
+   if(!num){ return false;}
+   number=num>=10?num:'0'+num;
+   return number;   
  }
 //Create Batch
 function createBatchs(section){

@@ -51,13 +51,14 @@ class Batch extends Modal{
     // All batchs.
   public static async function genAllBatchs(){
    return true;
-  }
+  } 
+  
    //create batchs
-   public static async function genBatchCreate(
-         string $batch_number,
-         string $start_ts,
-         string $end_ts,
-        ): Awaitable<void> {
+   public static async function genCreate(
+          string $batch_number,
+          string $start_ts,
+          string $end_ts,
+        ):Awaitable<bool>{
         $db = await self::genDb();
          await $db->queryf('INSERT INTO batchs (create_ts,start_ts,end_ts,batch_number) VALUES (NOW(),%s,%s,%s)',
                 $start_ts,
@@ -65,8 +66,8 @@ class Batch extends Modal{
                 $batch_number,
         );
     self::invalidateMCRecords(); // Invalidate Memcached ActivityLog data.
-  }	
-
+    return true;
+  }
 
 
 }

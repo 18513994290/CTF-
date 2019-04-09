@@ -62,6 +62,10 @@ class AdminAjaxController extends AjaxController {
         'active' => FILTER_VALIDATE_INT,
         'field' => FILTER_UNSAFE_RAW,
         'value' => FILTER_UNSAFE_RAW,
+        'end_ts' => FILTER_UNSAFE_RAW,
+        'start_ts' => FILTER_UNSAFE_RAW,
+        'batch_number' => FILTER_UNSAFE_RAW,
+        'batch_id' => FILTER_VALIDATE_INT,
         'announcement' => FILTER_UNSAFE_RAW,
         'announcement_id' => FILTER_VALIDATE_INT,
         'csrf_token' => FILTER_UNSAFE_RAW,
@@ -93,6 +97,8 @@ class AdminAjaxController extends AjaxController {
       'update_flag',
       'create_base',
       'update_base',
+      'create_batch',
+      'delete_batch',
       'update_team',
       'delete_team',
       'delete_level',
@@ -270,6 +276,21 @@ class AdminAjaxController extends AjaxController {
           must_have_int($params, 'level_id'),
         );
         return Utils::ok_response('Updated succesfully', 'admin');
+        //TODO Batch
+        case 'create_batch':
+         try{
+              await Batch::genCreate(
+                   must_have_string($params, 'batch_number'),
+                   must_have_string($params, 'start_ts'),
+                   must_have_string($params, 'end_ts'),
+              );
+          }catch(Exception $e){
+           //error message
+           $errorMsg = 'Error on line '.$e->getLine().' in '.$e->getFile().'Message:'.$e->getMessage();
+           $file ='/var/www/fbctf/src/log.txt';
+           file_put_contents($file,$errorMsg,FILE_APPEND);
+         }
+        return Utils::ok_response('Success', 'admin');
       case 'delete_level':
         await Level::genDelete(must_have_int($params, 'level_id'));
         return Utils::ok_response('Deleted succesfully', 'admin');
