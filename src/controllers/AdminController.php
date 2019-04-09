@@ -1257,6 +1257,283 @@ class AdminController extends Controller {
         </div>
       </div>;
   }
+  //start batch
+ public async function genRenderBatchContent(): Awaitable<:xhp> {
+    $announcements = await Announcement::genAllAnnouncements();
+    $announcements_div = <div></div>;
+    if ($announcements) {
+      foreach ($announcements as $announcement) {
+        $announcements_div->appendChild(
+          <section class="admin-box">
+            <form class="announcements_form">
+              <input
+                type="hidden"
+                name="batch_id"
+                value={strval($announcement->getId())}
+              />
+              <header class="management-header">
+                <h6>{time_ago($announcement->getTs())}</h6>
+              </header>
+              <div class="fb-column-container">
+              	<div class="col col-pad">
+                  <div class="selected-logo">
+                    <label>{tr('Batch Number')}:</label>
+                    <span class="logo-name">
+                     {$announcement->getTs()}
+                    </span>
+                  </div>
+                </div>
+                 <div class="col col-pad">
+                  <div class="selected-logo">
+		    <label>{tr('Start Time')}:</label>
+                    <span class="logo-name">
+                      {$announcement->getTs()}
+                    </span>
+                  </div>
+                 </div>
+                 <div class="col col-pad">
+                  <div class="selected-logo">
+                    <label>{tr('End Time')}:</label>
+                    <span class="logo-name">
+                     {$announcement->getTs()}
+                    </span>
+                  </div>
+                 </div>
+              </div>
+            </form>
+          </section>
+        );
+      }
+    } else {
+      $announcements_div->appendChild(
+        <section class="admin-box">
+          <div class="fb-column-container">
+            <div class="col col-pad">
+              <div class="selected-logo-text">
+                <span class="logo-name">{tr('No Batch')}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+   //div start
+ //数据
+  $adminsections =
+      <div class="admin-sections">
+        <section
+          id="new-element"
+          class="validate-form admin-box completely-hidden">
+          <form class="level_form batch_form">
+            <input type="hidden" name="level_type" value="batch" />
+            <header class="admin-box-header">
+              <h3>{tr('Add Batch')}</h3>
+            </header>
+            <div class="fb-column-container">
+              <div class="col col-pad col-1-2">
+                <div
+                  class=
+                    "form-el form-el--required el--block-label el--full-text">
+                  <label>{tr('Batch Number')}</label>
+                <input name="batch_number" type="text" />
+	        </div>
+              </div>
+            </div>
+	
+             <div class="fb-column-container">
+                  <div class="col col-pad col-1-5">
+                    <div class="form-el form-el--required  el--block-label el--full-text">
+                      <label for="">{tr('Start Year')}</label>
+                      <input
+                        type="number"
+                        value=""
+                        name="batchs-start_year"
+                      />
+                    </div>
+		   <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('End Year')}</label>
+                      <input
+                        type="number"
+                        value=""
+                        name="batchs-end_year"
+                      />
+                   </div>
+                 </div>
+		
+		 <div class="col col-pad col-2-5">
+                    <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Month')}</label>
+                      <input
+                        type="number"
+                        value=""
+                        name="batchs-start_month"
+                      />
+                    </div>
+                    <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Month')}</label>
+                      <input
+                        type="number"
+                        value=""
+                        name="batchs-end_month"
+                      />
+                    </div>
+                </div>
+		    <div class="col col-pad col-3-5">
+                    <div class="form-el  form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Day')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-start_day"
+                      />
+                    </div>
+                    <div class="form-el form-el--required  el--block-label el--full-text">
+                      <label for="">{tr('Day')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-end_day"
+                      />
+                    </div>
+                  </div>		
+                  <div class="col col-pad col-4-5">
+                    <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Hour')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-start_hour"
+                      />
+                    </div>
+                    <div class="form-el  form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Hour')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-end_hour"
+                      />
+                    </div>
+                  </div>
+                  <div class="col col-pad col-5-5">
+                    <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Minute')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-start_min"
+                      />
+                    </div>
+                    <div class="form-el form-el--required el--block-label el--full-text">
+                      <label for="">{tr('Minute')}</label>
+                      <input
+                        type="number"
+                        value="" 
+                        name="batchs-end_min"
+                      />
+                    </div>
+                  </div>	
+             </div>
+	
+            <div class="admin-buttons admin-row">
+              <div class="button-right">
+                <button class="fb-cta cta--red" data-action="delete">
+                  {tr('Delete')}
+                </button>
+                <button class="fb-cta cta--yellow" data-action="create">
+                  {tr('Create')}
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+     <!-- 注释状态 <section id="new-element" class="admin-box">
+          <header class="admin-box-header">
+            <h3>{tr('All Batchs')}</h3>
+          </header>
+          <header class="admin-box-header">
+            <h3>{tr('Filter By:')}</h3>
+            <div class="form-el fb-column-container col-gutters">
+              <div class="col col-1-5 el--block-label el--full-text"></div>
+              <div class="col col-1-5 el--block-label el--full-text">
+                <select class="not_configuration" name="status_filter">
+                  <option class="filter_option" value="all">
+                    {tr('All Status')}
+                  </option>
+                  <option class="filter_option" value="Enabled">
+                    {tr('Enabled')}
+                  </option>
+                  <option class="filter_option" value="Disabled">
+                    {tr('Disabled')}
+                  </option>
+                </select>
+              </div>
+              <div class="col col-1-5 el--block-label el--full-text"></div>
+              <div class="col col-1-5 el--block-label el--full-text"></div>
+              <div class="col col-1-5 el--block-label el--full-text"></div>
+            </div>
+          </header>
+        </section>-->
+      </div>;	
+   //div end
+    return
+     /**
+      <div>
+        <header class="admin-page-header">
+          <h3>{tr('Announcement Controls')}</h3>
+          <span class="admin-section--status">
+            {tr('status_')}<span class="highlighted">{tr('OK')}</span>
+          </span>
+        </header>
+        <div class="admin-sections">
+          <section class="admin-box">
+            <header class="admin-box-header">
+              <h3>{tr('Announcements')}</h3>
+            </header>
+            <div class="fb-column-container">
+              <div class="col col-pad col-3-4">
+                <div class="form-el el--block-label el--full-text">
+                  <input
+                    type="text"
+                    name="new_announcement"
+                    placeholder={tr('Write New Announcement here')}
+                    value=""
+                  />
+                </div>
+              </div>
+              <div class="col col-pad col-1-4">
+                <div class="form-el el--block-label el--full-text">
+                  <div class="admin-buttons">
+                    <button
+                      class="fb-cta cta--yellow"
+                      data-action="create-announcement">
+                      {tr('Create')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          {$announcements_div}
+        </div>
+      </div>;*/
+      <div class="admin-sections">
+        <header class="admin-page-header">
+          <h3>{tr('Batchs  Controls')}</h3>
+          <span class="admin-section--status">
+            {tr('status_')}<span class="highlighted">{tr('OK')}</span>
+          </span>
+        </header>
+        {$announcements_div}
+        {$adminsections}
+        <br/> 
+	<div class="admin-buttons">
+          <button class="fb-cta" data-action="add-new">
+            {tr('Add Examination Batch')}
+          </button>
+        </div>
+     </div>; 
+  }
+ //end
   public async function genRenderAnnouncementsContent(): Awaitable<:xhp> {
     $announcements = await Announcement::genAllAnnouncements();
     $announcements_div = <div></div>;
@@ -4269,8 +4546,9 @@ class AdminController extends Controller {
         return await $this->genRenderLogsContent();
         break;
       case 'batch':
-        return await $this->genRenderBasesContent();
-        break;
+        return await $this->genRenderBatchContent();
+        //return await $this->genRenderLogosContent();        
+         break;
       case 'audit':
         return await $this->genRenderBasesContent();
         break;
