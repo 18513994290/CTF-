@@ -525,26 +525,18 @@ class Attachment extends Model {
     self::invalidateMCRecords(); // Invalidate Memcached ActivityLog data.
   }
         // All batchs.
-
-/**
-  public static async function genAllBatchs(
-    bool $refresh = false,
-  ): Awaitable<array<Attachment>> {
+  public static async function genAllBatchs() {
     $mc_result = self::getMCRecords('ALL_BATCHS');
-    if (!$mc_result || count($mc_result) === 0 || $refresh) {
+    //if (!$mc_result || count($mc_result) === 0 || $refresh) {
       $db = await self::genDb();
       $all_batchs = Map {};
       $result = await $db->queryf('SELECT * FROM batchs ORDER BY id');
-      foreach ($result->mapRows() as $row) {
-          $all_batchs->add(
-              Pair {intval($row->get('id')), self::BatchFromRow($row)},
-        );
-      }
-      self::setMCRecords('ALL_BATCHS', new Map($all_batchs));
-      $batchs = array();
-      $batchs = $all_batchs->toValuesArray();
-      return $batchs;
-    } else {
+      
+     //self::setMCRecords('ALL_BATCHS', new Map($all_batchs));
+      
+       $batchs=$result->mapRows();
+       return $batchs;
+    /*} else {
         $batchs = array();
         invariant(
             $mc_result instanceof Map,
@@ -552,19 +544,9 @@ class Attachment extends Model {
       );
         $batchs = $mc_result->toValuesArray();
         return $batchs;
-        }
+        }*/
     }	
-  */
-   public static async function genAllBatchs() {
-
-    $db = await self::genDb();
-  // $result = await $db->queryf("SELECT id,start_ts,end_ts,batch_number,case status when '0' then '未开始' when '1' then '进行中' when '2' then '已结束' end as status FROM batchs ORDER BY id");	
-            $result = await $db->queryf('SELECT * FROM batchs ORDER BY id');	
-	   $all_batchs=$result->mapRows();	
-	   return $all_batchs;	
-  }	
-
-
+  
   //BatchFromRow
   //form
     private static function BatchFromRow(
@@ -575,11 +557,40 @@ class Attachment extends Model {
             intval(must_have_idx($row, 'batch_number')),
             must_have_idx($row, 'start_ts'),
             must_have_idx($row, 'end_ts'),
+            must_have_idx($row, 'endabled'),
+            must_have_idx($row, 'status'),
             must_have_idx($row, 'create_ts'),
         );
     }
  //limit 1
- 	
+     public static async function gen($batch_id) {
+	      $db = await self::genDb();
+              $result = await $db->queryf('SELECT batch_number FROM batchs where id = %d ',$batch_id);
+              $data=json_encode($result);
+              if($data){
+                 $batch_number=$data;
+              }else{
+                $batch_number=''; 
+              }
+              return $batch_number;
+     }
 
+
+    // Get a country by id.
+  public static async function genBatch() {
+    /**$mc_result = self::getMCRecords('ALL_BATCH_BY_ID');
+    if (!$mc_result || count($mc_result) === 0 || $refresh) {
+     */
+      $db = await self::genDb();
+      $result = await $db->queryf('SELECT batch_number FROM batchs ORDER BY id');
+       
+      $data=json_encode($result);
+      if($result){
+        $data=json_encode($result);
+      }else{
+        $data='';
+       }     	
+      return $data;
+  }	
 
 }

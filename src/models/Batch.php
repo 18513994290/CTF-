@@ -58,15 +58,16 @@ class Batch extends Modal{
           string $batch_number,
           string $start_ts,
           string $end_ts,
-        ):Awaitable<bool>{
+        ):Awaitable<void>{
+      
         $db = await self::genDb();
          await $db->queryf('INSERT INTO batchs (create_ts,start_ts,end_ts,batch_number) VALUES (NOW(),%s,%s,%s)',
                 $start_ts,
                 $end_ts,
                 $batch_number,
         );
-    self::invalidateMCRecords(); // Invalidate Memcached ActivityLog data.
-    return true;
+   // self::invalidateMCRecords(); // Invalidate Memcached ActivityLog data.
+       
   }
 
 
