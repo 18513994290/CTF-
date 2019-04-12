@@ -37,33 +37,34 @@ class AdminController extends Controller {
       'audit',
     );
   }
-  private async function genGenerateBatchsSelect(
-       string $selected,
-    ):Awaitable<:xhp> {
-    $select =
-      <select class="not_configuration" name="batch_number" disabled={true} />;
-    if ($selected =='0') {
+   /**
+   private async function gtchSelectenGenerateBatchSelect($selected){
+    $select = 
+      <select class="not_configuration" name="entity_id" disabled={true} />;
+    if ($selected === 0) {
       $select->appendChild(
-        <option value="0" >{tr('Auto')}</option>,
+        <option value="0" selected={true}>{tr('Auto')}</option>,
       );
-      }else{
+    } else {
+      $country = await Attachments::gen(intval($selected));
       $select->appendChild(
-        <option value={$selected} selected={true}>
-          {$selected}
+        <option value={strval($country['batch_number'])} selected={true}>
+          {$country['batch_number']}
         </option>,
       );
-     }
-     
-     $countries = await Attachment::genAllAvailableBatchs();
-      foreach ($countries as $country) {
-            $select->appendChild(
-            <option value="0">
-               {$country['batch_number']}
-           </option>,
-           );
-         }
-      return $select;
+    }
+    $countries = await Attachments::genBatch();
+    foreach ($countries as $country) {
+      $select->appendChild(
+        <option value={strval($country['batch_number'])}>
+          {$country['batch_number']}
+        </option>,
+      );
+    }
+    return $select;
   }
+
+*/
 
   private async function genGenerateCountriesSelect(
     int $selected,
@@ -1287,8 +1288,10 @@ class AdminController extends Controller {
   }
   //start batch
  public async function genRenderBatchContent(): Awaitable<:xhp> {
-   $announcements  = await Attachment::genAllBatchs();
-   $announcements_div = <div></div>;
+    //$announcements = await Announcement::genAllAnnouncements();
+    $announcements  = await Attachment::genAllBatchs();
+    //print_r($announcements[0]);
+    $announcements_div = <div></div>;
     if ($announcements) {
       foreach ($announcements as $announcement) {
         $announcements_div->appendChild(
@@ -1297,25 +1300,25 @@ class AdminController extends Controller {
               <input
                 type="hidden"
                 name="batch_id"
-		value={strval($announcement['id'])} 
+                value={strval($announcement['id'])}
               />
               <header class="management-header">
-                <h6>{tr('Batch')}</h6>
+                 <h6>{tr('Batch')}</h6>
               </header>
               <div class="fb-column-container">
               	<div class="col col-pad">
                   <div class="selected-logo">
                     <label>{tr('Batch Number')}:</label>
                     <span class="logo-name">
-			{$announcement['batch_number']}                   
-		    </span>
+                     {$announcement['batch_number']}
+                    </span>
                   </div>
                 </div>
                  <div class="col col-pad">
                   <div class="selected-logo">
 		    <label>{tr('Start Time')}:</label>
                     <span class="logo-name">
-			{$announcement['start_ts']}                   
+                      {$announcement['start_ts']}
                     </span>
                   </div>
                  </div>
@@ -1323,7 +1326,7 @@ class AdminController extends Controller {
                   <div class="selected-logo">
                     <label>{tr('End Time')}:</label>
                     <span class="logo-name">
-			{$announcement['end_ts']}                  
+                     {$announcement['end_ts']}
                     </span>
                   </div>
                  </div>
@@ -1916,12 +1919,19 @@ class AdminController extends Controller {
       $level_categories_select,
       $filter_categories_select,
     ) = await \HH\Asio\va(
-      $this->genGenerateBatchsSelect('0'),
-      //$this->genGenerateCountriesSelect(0),
+      $this->genGenerateCountriesSelect(0),
+      //$this->genGenerateBatchSelect(),
       $this->genGenerateLevelCategoriesSelect(0),
       $this->genGenerateFilterCategoriesSelect(),
-    );
-   print_r($countries_select);    
+    ); 
+    /* 
+    try{
+      //$name=await $this->genGenerateBatchSelect();
+    }catch(Exception $e)
+      $file  = '/var/www/fbctf/src/log.txt';
+      $error='Message: ' .$e->getMessage()."line:".$e->getLine().' in '.$e->getFile();
+      file_put_contents($file, '3333343Batchs'.PHP_EOL,FILE_APPEND);
+    }*/
     $adminsections =
       <div class="admin-sections">
         <section
@@ -1959,7 +1969,7 @@ class AdminController extends Controller {
                   class=
                     "form-el form-el--required fb-column-container col-gutters">
                   <div class="col col-1-2 el--block-label el--full-text">
-                    <label for="">{tr('Batch')}</label>
+                    <label for="">{tr('Country')}</label>
                     {$countries_select}
                   </div>
                   <div class="col col-1-2 el--block-label el--full-text">
@@ -2093,8 +2103,7 @@ class AdminController extends Controller {
       $quiz_id = strval($quiz->getId());
       $quiz_id_txt = 'quiz_id'.strval($quiz->getId());
       $countries_select =
-        await $this->genGenerateBatchsSelect($quiz->getBatchNumber()); // TODO: Combine Awaits
-        //await $this->genGenerateCountriesSelect($quiz->getEntityId()); // TODO: Combine Awaits
+        await $this->genGenerateCountriesSelect($quiz->getEntityId()); // TODO: Combine Awaits
       $level_categories_select =
         await $this->genGenerateLevelCategoriesSelect($quiz->getCategoryId());
       
@@ -2160,7 +2169,7 @@ class AdminController extends Controller {
 		<!--TODO ALL Quiz-->
                 <div class="form-el fb-column-container col-gutters">
                   <div class="col col-1-2 el--block-label el--full-text">
-                    <label for="">{tr('Batch')}</label>
+                    <label for="">{tr('Country')}</label>
                     {$countries_select}
                   </div>
                   <div class="col col-1-2 el--block-label el--full-text">
@@ -2303,7 +2312,7 @@ class AdminController extends Controller {
       $level_categories_select,
       $filter_categories_select,
     ) = await \HH\Asio\va(
-      $this->genGenerateBatchsSelect('0'),
+      $this->genGenerateCountriesSelect(0),
       $this->genGenerateLevelCategoriesSelect(0),
       $this->genGenerateFilterCategoriesSelect(),
     );
@@ -2634,7 +2643,7 @@ class AdminController extends Controller {
         }
       }
       list($countries_select, $level_categories_select) = await \HH\Asio\va(
-        $this->genGenerateBatchsSelect($flag->getBatchNumber()),
+        $this->genGenerateCountriesSelect($flag->getEntityId()),
         $this->genGenerateLevelCategoriesSelect($flag->getCategoryId()),
       ); // TODO: Combine Awaits
       $adminsections->appendChild(
@@ -2829,7 +2838,7 @@ class AdminController extends Controller {
       $level_categories_select,
       $filter_categories_select,
     ) = await \HH\Asio\va(
-      $this->genGenerateBatchsSelect('0'),
+      $this->genGenerateCountriesSelect(0),
       $this->genGenerateLevelCategoriesSelect(0),
       $this->genGenerateFilterCategoriesSelect(),
     );
@@ -3169,7 +3178,7 @@ class AdminController extends Controller {
         $l_c++;
       }
       list($countries_select, $level_categories_select) = await \HH\Asio\va(
-        $this->genGenerateBatchsSelect($base->getBatchNumber()),
+        $this->genGenerateCountriesSelect($base->getEntityId()),
         $this->genGenerateLevelCategoriesSelect($base->getCategoryId()),
       ); // TODO: Combine Awaits
       $adminsections->appendChild(

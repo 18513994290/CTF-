@@ -579,13 +579,13 @@ class Attachment extends Model {
         );
     }
  //limit 1
- public static async function genAllAvailableBatchs() {
-   $db = await self::genDb();
-   $result = await $db->queryf('SELECT batch_number FROM batchs where enabled = 0 AND start_ts <  now()');
-   $all_batchs=$result->mapRows();
-   return $all_batchs;
- }
  	
-
+   // All enabled and unused countries
+  public static async function genAllAvailableBatchs(){
+       $db = await self::genDb();
+       $db_result = await $db->queryf('SELECT * FROM batchs WHERE enabled = 0 ');
+       $all_countries$=$db_result->mapRows();
+       return $all_countries;
+  }
 
 }

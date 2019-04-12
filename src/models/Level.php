@@ -25,6 +25,7 @@ class Level extends Model implements Importable, Exportable {
     private string $hint,
     private string $penalty,
     private string $created_ts,
+    private string $batch_number,
   ) {}
   public function getId(): int {
     return $this->id;
@@ -71,6 +72,10 @@ class Level extends Model implements Importable, Exportable {
   public function getCreatedTs(): string {
     return $this->created_ts;
   }
+  public function getBatchNumber(): string {
+    return $this->batch_number;
+  }
+
   private static function levelFromRow(Map<string, string> $row): Level {
     return new Level(
       intval(must_have_idx($row, 'id')),
@@ -88,6 +93,7 @@ class Level extends Model implements Importable, Exportable {
       must_have_idx($row, 'hint'),
       must_have_idx($row, 'penalty'),
       must_have_idx($row, 'created_ts'),
+      must_have_idx($row, 'batch_number'),
     );
   }
   // Retrieve the level that is using one country

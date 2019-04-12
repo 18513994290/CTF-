@@ -172,15 +172,16 @@ class AdminAjaxController extends AjaxController {
         return Utils::error_response('Invalid action', 'admin');
       case 'create_quiz':
         try{
-        $bonus = $default_bonus->getValue();
-        $bonus_dec = $default_bonusdec->getValue();
+        //$bonus = $default_bonus->getValue();
+        //$bonus_dec = $default_bonusdec->getValue();
         await Level::genCreateQuiz(
           must_have_string($params, 'title'),
           must_have_string($params, 'question'),
           must_have_string($params, 'answer'),
           must_have_int($params, 'entity_id'),
           // must_have_int($params, 'points'),
-          intval($bonus),
+           must_have_int($params, 'bonus'),
+          //intval($bonus),
          // intval($bonus_dec),
           must_have_string($params, 'hint'),
           must_have_string($params, 'penalty'),
@@ -278,8 +279,9 @@ class AdminAjaxController extends AjaxController {
         return Utils::ok_response('Updated succesfully', 'admin');
         //TODO Batch
         case 'create_batch':
-         try{
-              await Batch::genCreate(
+         try{ 
+
+              await Attachment::genBatchCreate(
                    must_have_string($params, 'batch_number'),
                    must_have_string($params, 'start_ts'),
                    must_have_string($params, 'end_ts'),
