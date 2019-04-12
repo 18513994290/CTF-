@@ -3749,6 +3749,405 @@ class AdminController extends Controller {
     );
     return $team_tabs;
   }
+  //start audit
+   public async function genRenderAuditContent(): Awaitable<:xhp> {
+    $adminsections =
+      <div class="admin-sections">
+        <section
+          class="admin-box validate-form section-locked completely-hidden">
+          <form class="team_form">
+            <header class="admin-box-header">
+              <h3>{tr('New Team')}</h3>
+            </header>
+            <div class="fb-column-container">
+              <div class="col col-pad col-1-2">
+                <div class="form-el--required el--block-label el--full-text">
+                  <label class="admin-label" for="">{tr('Team Name')}</label>
+                  <input
+                    name="team_name"
+                    type="text"
+                    value=""
+                    maxlength={20}
+                  />
+                </div>
+              </div>
+              <!--<div class="col col-pad col-1-2">
+                <div class="form-el--required el--block-label el--full-text">
+                  <label class="admin-label" for="">{tr('Password')}</label>
+                  <input name="password" type="password" value="" />
+                </div>
+              </div>-->
+            </div>
+            <div class="admin-row el--block-label">
+              <label>{tr('Team Logo')}</label>
+              <div class="fb-column-container">
+                <div class="col col-shrink">
+                  <div class="post-avatar has-avatar">
+                    <svg class="icon icon--badge">
+                      <use href="#icon--badge-" />
+
+                    </svg>
+                  </div>
+                </div>
+                <div class="form-el--required col col-grow">
+                  <div class="selected-logo">
+                    <label>{tr('Selected Logo:')}</label>
+                    <span class="logo-name"></span>
+                  </div>
+                  <a href="#" class="alt-link js-choose-logo">
+                    {tr('Select Logo')}
+                  </a>
+                </div>
+                <!--
+                <div class="col col-shrink admin-buttons">
+                  <a href="#" class="admin--edit" data-action="edit">
+                    {tr('EDIT')}
+                  </a>
+                  <button class="fb-cta cta--red" data-action="delete">
+                    {tr('Delete')}
+                  </button>
+                  <button
+                    class="fb-cta cta--yellow js-confirm-save"
+                    data-action="create">
+                    {tr('Create')}
+                  </button>
+                </div>-->
+              </div>
+            </div>
+          </form>
+        </section>
+        <section class="admin-box">
+          <header class="admin-box-header">
+            <h3>{tr('All Teams')}</h3>
+            <!--
+            <form class="all_team_form">
+              <div class="admin-section-toggle radio-inline col">
+                <input
+                  type="radio"
+                  name="fb--teams--all_team"
+                  id="fb--teams--all_team--on"
+                />
+                <label for="fb--teams--all_team--on">{tr('On')}</label>
+                <input
+                  type="radio"
+                  name="fb--teams--all_team"
+                  id="fb--teams--all_team--off"
+                />
+                <label for="fb--teams--all_team--off">{tr('Off')}</label>
+              </div>
+            </form>-->
+          </header>
+        </section>
+      </div>;
+
+    $c = 1;
+    $all_teams = await Team::genAllTeams();
+    foreach ($all_teams as $team) {
+      $logo_model = await $team->getLogoModel(); // TODO: Combine Awaits
+      if ($logo_model->getCustom()) {
+        $image = <img class="icon--badge" src={$logo_model->getLogo()}></img>;
+      } else {
+        $iconbadge = '#icon--badge-'.$logo_model->getName();
+        $image =
+          <svg class="icon--badge">
+            <use href={$iconbadge} />
+          </svg>;
+      }
+
+      $team_protected = $team->getProtected();
+      $team_active_on = $team->getActive();
+      $team_active_off = !$team->getActive();
+      $team_admin_on = $team->getAdmin();
+      $team_admin_off = !$team->getAdmin();
+      $team_visible_on = $team->getVisible();
+      $team_visible_off = !$team->getVisible();
+      $team_id = strval($team->getId());
+
+      $team_status_name = 'fb--teams--team-'.strval($team->getId()).'-status';
+      $team_status_on_id =
+        'fb--teams--team-'.strval($team->getId()).'-status--on';
+      $team_status_off_id =
+        'fb--teams--team-'.strval($team->getId()).'-status--off';
+      $team_admin_name = 'fb--teams--team-'.strval($team->getId()).'-admin';
+      $team_admin_on_id =
+        'fb--teams--team-'.strval($team->getId()).'-admin--on';
+      $team_admin_off_id =
+        'fb--teams--team-'.strval($team->getId()).'-admin--off';
+      $team_visible_name =
+        'fb--teams--team-'.strval($team->getId()).'-visible';
+      $team_visible_on_id =
+        'fb--teams--team-'.strval($team->getId()).'-visible--on';
+      $team_visible_off_id =
+        'fb--teams--team-'.strval($team->getId()).'-visible--off';
+
+      if ($team_protected) {
+        $toggle_status =
+          <div class="admin-section-toggle radio-inline">
+            <input
+              type="radio"
+              name={$team_status_name}
+              id={$team_status_on_id}
+              checked={$team_active_on}
+            />
+            <label for={$team_status_on_id}>{tr('On')}</label>
+          </div>;
+        $toggle_admin =
+          <div class="admin-section-toggle radio-inline">
+            <input
+              type="radio"
+              name={$team_admin_name}
+              id={$team_admin_on_id}
+              checked={$team_admin_on}
+            />
+            <label for={$team_admin_on_id}>{tr('On')}</label>
+          </div>;
+        $delete_button =
+          <button class="fb-cta cta--red" disabled={true}>
+            {tr('Protected')}
+          </button>;
+      } else {
+        $toggle_status =
+          <div class="admin-section-toggle radio-inline">
+            <input
+              type="radio"
+              name={$team_status_name}
+              id={$team_status_on_id}
+              checked={$team_active_on}
+            />
+            <label for={$team_status_on_id}>{tr('On')}</label>
+            <input
+              type="radio"
+              name={$team_status_name}
+              id={$team_status_off_id}
+              checked={$team_active_off}
+            />
+            <label for={$team_status_off_id}>{tr('Off')}</label>
+          </div>;
+        $toggle_admin =
+          <div class="admin-section-toggle radio-inline">
+            <input
+              type="radio"
+              name={$team_admin_name}
+              id={$team_admin_on_id}
+              checked={$team_admin_on}
+            />
+            <label for={$team_admin_on_id}>{tr('On')}</label>
+            <input
+              type="radio"
+              name={$team_admin_name}
+              id={$team_admin_off_id}
+              checked={$team_admin_off}
+            />
+            <label for={$team_admin_off_id}>{tr('Off')}</label>
+          </div>;
+        $delete_button =
+          <div style="display: inline">
+            <input type="hidden" name="team_id" value={$team_id} />
+            <a
+              href="#"
+              class="fb-cta cta--red js-delete-team"
+              style="margin-right: 20px">
+              {tr('Delete')}
+            </a>
+          </div>;
+      }
+
+      $tab_team = 'team'.strval($team->getId());
+      $tab_names = 'names'.strval($team->getId());
+      $tab_scores = 'scores'.strval($team->getId());
+      $tab_failures = 'failures'.strval($team->getId());
+
+      $awaitables = Map {
+        'team_tabs' => $this->genGenerateTeamTabs($team->getId()),
+        'team_names' => $this->genGenerateTeamNames($team->getId()),
+        'team_scores' => $this->genGenerateTeamScores($team->getId()),
+        'team_failures' => $this->genGenerateTeamFailures($team->getId()),
+      };
+
+      $results = await \HH\Asio\m($awaitables); // TODO: Combine Awaits
+
+      $team_tabs = $results['team_tabs'];
+      $team_names = $results['team_names'];
+      $team_scores = $results['team_scores'];
+      $team_failures = $results['team_failures'];
+
+      $adminsections->appendChild(
+        <div>
+          {$team_tabs}
+          <div class="tab-content-container">
+            <div class="radio-tab-content active" data-tab={$tab_team}>
+              <section class="admin-box validate-form section-locked">
+                <form class="team_form" name={strval($team->getId())}>
+                  <input
+                    type="hidden"
+                    name="team_id"
+                    value={strval($team->getId())}
+                  />
+                  <header class="admin-box-header">
+                    <h3>{tr('Team')} {$c}</h3>
+                   <!-- {$toggle_status}-->
+                  </header>
+                  <div class="fb-column-container">
+                    <div class="col col-pad col-1-3">
+                      <div
+                        class=
+                          "form-el form-el--required el--block-label el--full-text">
+                        <label class="admin-label" for="">
+                          {tr('Team Name')}
+                        </label>
+                        <input
+                          name="team_name"
+                          type="text"
+                          value={$team->getName()}
+                          maxlength={20}
+                          disabled={true}
+                        />
+                      </div>
+                      <div
+                        class=
+                          "form-el form-el--required el--block-label el--full-text">
+                        <label class="admin-label" for="">
+                          {tr('Score')}
+                        </label>
+                        <input
+                          name="points"
+                          type="text"
+                          value={strval($team->getPoints())}
+                          disabled={true}
+                        />
+                      </div>
+                    </div>
+                    <div class="col col-pad col-1-3">
+                       <!--
+                       <div class="form-el el--block-label el--full-text">
+                        <label class="admin-label" for="">
+                          {tr('Change Password')}
+                        </label>
+                        <input
+                          name="password"
+                          type="password"
+                          disabled={true}
+                        />
+                      </div>-->
+                    </div>
+                    <!--
+                    <div class="col col-pad col-1-3">
+                      <div class="form-el el--block-label">
+                        <label class="admin-label" for="">
+                          {tr('Admin Level')}
+                        </label>
+                        {$toggle_admin}
+                      </div>
+                      <div class="form-el el--block-label">
+                        <label class="admin-label" for="">
+                          {tr('Visibility')}
+                        </label>
+                        <div class="admin-section-toggle radio-inline">
+                          <input
+                            type="radio"
+                            name={$team_visible_name}
+                            id={$team_visible_on_id}
+                            checked={$team_visible_on}
+                          />
+                          <label for={$team_visible_on_id}>
+                            {tr('On')}
+                          </label>
+                          <input
+                            type="radio"
+                            name={$team_visible_name}
+                            id={$team_visible_off_id}
+                            checked={$team_visible_off}
+                          />
+                          <label for={$team_visible_off_id}>
+                            {tr('Off')}
+                          </label>
+                        </div>
+                      </div>
+                    </div>-->
+                  </div>
+                  <div class="admin-row el--block-label">
+                    <label>{tr('Team Logo')}</label>
+                    <div class="fb-column-container">
+                      <div class="col col-shrink">
+                        <div class="post-avatar has-avatar">
+                          {$image}
+                        </div>
+                      </div>
+                      <div class="form-el--required col col-grow">
+                        <!--
+                         <div class="selected-logo">
+                          <label>{tr('Selected Logo:')}</label>
+                          <span class="logo-name">{$team->getLogo()}</span>
+                        </div>
+                        <a href="#" class="alt-link js-choose-logo">
+                          {tr('Select Logo')}
+                        </a>-->
+                      </div>
+                      <!--
+                      <div class="col col-shrink admin-buttons">
+                        <a href="#" class="admin--edit" data-action="edit">
+                          {tr('EDIT')}
+                        </a>
+                        {$delete_button}
+                        <button
+                          class="fb-cta cta--yellow js-confirm-save"
+                          data-action="save">
+                          {tr('Save')}
+                        </button>
+                      </div>-->
+                    </div>
+                  </div>
+                </form>
+              </section>
+            </div>
+            <div class="radio-tab-content" data-tab={$tab_names}>
+              <section class="admin-box">
+                <header class="admin-box-header">
+                  <h3>{tr('Team')} {$c}</h3>
+                </header>
+                {$team_names}
+              </section>
+            </div>
+            <div class="radio-tab-content" data-tab={$tab_scores}>
+              <section class="admin-box">
+                <header class="admin-box-header">
+                  <h3>{tr('Team')} {$c}</h3>
+                </header>
+                {$team_scores}
+              </section>
+            </div>
+            <div class="radio-tab-content" data-tab={$tab_failures}>
+              <section class="admin-box">
+                <header class="admin-box-header">
+                  <h3>{tr('Team')} {$c}</h3>
+                </header>
+                {$team_failures}
+              </section>
+            </div>
+          </div>
+        </div>
+      );
+      $c++;
+    }
+    return
+      <div>
+        <header class="admin-page-header">
+          <h3>{tr('Team Management')}</h3>
+          <span class="admin-section--status">
+            status_<span class="highlighted">{tr('OK')}</span>
+          </span>
+        </header>
+        {$adminsections}
+        <!--
+        <div class="admin-buttons">
+          <button class="fb-cta" data-action="add-new">
+            {tr('Add Team')}
+          </button>
+        </div>-->
+      </div>;
+  }
+
+ //end
   public async function genRenderTeamsContent(): Awaitable<:xhp> {
     $adminsections =
       <div class="admin-sections">
@@ -4581,7 +4980,7 @@ class AdminController extends Controller {
         //return await $this->genRenderLogosContent();        
          break;
       case 'audit':
-        return await $this->genRenderBasesContent();
+        return await $this->genRenderAuditContent();
         break;
       default:
         return $this->renderMainContent();

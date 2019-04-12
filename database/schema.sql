@@ -54,9 +54,34 @@ CREATE TABLE `levels` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+/*答题记录表*/
+DROP TABLE IF EXISTS `teams_score_log`;
+
+CREATE TABLE `teams_score_log` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `team_id` int(11) NOT NULL,
+    `level_id` int(11) NOT NULL,
+    `points`  int(11) NOT NULL,
+    `batch_number` varchar(255) NOT NULL,
+    `created_ts` timestamp NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`),
+    KEY `team_id` (`team_id`),
+    KEY `level_id` (`level_id`)
+  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+
+
+
+
+
 --
 -- Table structure for table `categories`
 --
+
+
+
+
 
 DROP TABLE IF EXISTS `categories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
