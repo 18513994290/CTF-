@@ -179,6 +179,7 @@ class AdminAjaxController extends AjaxController {
           must_have_string($params, 'question'),
           must_have_string($params, 'answer'),
           must_have_int($params, 'entity_id'),
+          intval(must_have_int($params, 'category_id')),
           // must_have_int($params, 'points'),
            must_have_int($params, 'bonus'),
           //intval($bonus),
@@ -200,6 +201,7 @@ class AdminAjaxController extends AjaxController {
           must_have_string($params, 'question'),
           must_have_string($params, 'answer'),
           must_have_int($params, 'entity_id'),
+          intval(must_have_int($params, 'category_id')),
          // must_have_int($params, 'points'),
           must_have_int($params, 'bonus'),
           //must_have_int($params, 'bonus_dec'),
@@ -245,7 +247,8 @@ class AdminAjaxController extends AjaxController {
           must_have_string($params, 'hint'),
           must_have_int($params, 'level_id'),
         );
-        return Utils::ok_response('Updated succesfully', 'admin');
+       
+         return Utils::ok_response('Updated succesfully', 'admin');
       case 'create_base':
          try{	await Level::genCreateBase(
           	must_have_string($params, 'title'),

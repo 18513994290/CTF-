@@ -38,14 +38,15 @@ class AdminController extends Controller {
     );
   }
   private async function genGenerateBatchsSelect(
-       string $selected,
+       int $selected,
     ):Awaitable<:xhp> {
     $select =
-      <select class="not_configuration" name="batch_number" disabled={true} />;
-    if ($selected =='0') {
-      $select->appendChild(
-        <option value="0" >{tr('Auto')}</option>,
-      );
+      <select class="not_configuration" name="batch_id" disabled={true} />;
+    if ($selected === 0) {
+ 	     $select->appendChild(
+        	<option value="0" >{tr('Auto')}</option>,
+             );
+      
       }else{
       $select->appendChild(
         <option value={$selected} selected={true}>
@@ -55,19 +56,16 @@ class AdminController extends Controller {
      }
      
      $countries = await Attachment::genAllAvailableBatchs();
-      foreach ($countries as $country) {
+     foreach ($countries as $country) {
             $select->appendChild(
-            <option value="0">
-               {$country['batch_number']}
-           </option>,
-           );
+           	 <option value={strval($country['id'])}>{$country['batch_number']} </option>,
+             );
          }
       return $select;
   }
 
   private async function genGenerateCountriesSelect(
     int $selected,
-    bool $refresh = true,
   ): Awaitable<:xhp> {
     $select =
       <select class="not_configuration" name="entity_id" disabled={true} />;
@@ -76,19 +74,18 @@ class AdminController extends Controller {
         <option value="0" selected={true}>{tr('Auto')}</option>,
       );
     } else {
-      $country = await Attachment::genBatch(intval($selected));
+      $country = await Country::gen(intval($selected));
       $select->appendChild(
-        <option value={strval($country[0]['id'])} selected={true}>
-          {$country[0]['batch_number']}
+        <option value={strval($country->getId())} selected={true}>
+          {$country->getName()}
         </option>,
       );
     }
-   $countries = await Attachment::genAllAvailableBatchs();
-    //$countries = await Country::genAllAvailableCountries();
+    $countries = await Country::genAllAvailableCountries();
     foreach ($countries as $country) {
       $select->appendChild(
-        <option value={strval($country['id'])}>
-          {$country['batch_number']}
+        <option value={strval($country->getId())}>
+          {$country->getName()}
         </option>,
       );
     }
@@ -101,9 +98,9 @@ class AdminController extends Controller {
     $select =
       <select class="not_configuration" name="category_id" disabled={true} />;
     foreach ($categories as $category) {
-       /**if ($category->getCategory() === 'Quiz') {
+      if ($category->getCategory() === 'Quiz') {
         continue;
-      }*/
+      }
       if ($category->getId() === $selected) {
         $select->appendChild(
           <option
@@ -1918,12 +1915,10 @@ class AdminController extends Controller {
       $level_categories_select,
       $filter_categories_select,
     ) = await \HH\Asio\va(
-      //$this->genGenerateBatchsSelect('0'),
-      $this->genGenerateCountriesSelect(0),
+      $this->genGenerateBatchsSelect(0),
       $this->genGenerateLevelCategoriesSelect(0),
       $this->genGenerateFilterCategoriesSelect(),
     );
-   //print_r($countries_select);    
     $adminsections =
       <div class="admin-sections">
         <section
@@ -2099,6 +2094,7 @@ class AdminController extends Controller {
         await $this->genGenerateCountriesSelect($quiz->getEntityId()); // TODO: Combine Awaits
       $level_categories_select =
         await $this->genGenerateLevelCategoriesSelect($quiz->getCategoryId());
+      
      $delete_button =
         <div style="display: inline">
           <input type="hidden" name="level_id" value={$quiz_id} />
@@ -2304,9 +2300,9 @@ class AdminController extends Controller {
       $level_categories_select,
       $filter_categories_select,
     ) = await \HH\Asio\va(
-      //$this->genGenerateBatchsSelect('0'),
-       $this->genGenerateCountriesSelect(0),
-       $this->genGenerateLevelCategoriesSelect(0),
+      //$this->genGenerateBatchsSelect(0),
+     $this->genGenerateCountriesSelect(0), 
+     $this->genGenerateLevelCategoriesSelect(0),
       $this->genGenerateFilterCategoriesSelect(),
     );
     $adminsections =
@@ -2636,9 +2632,8 @@ class AdminController extends Controller {
         }
       }
       list($countries_select, $level_categories_select) = await \HH\Asio\va(
-       // $this->genGenerateBatchsSelect($flag->getBatchNumber()),
-        $this->genGenerateCountriesSelect($flag->getEntityId()),
-         $this->genGenerateLevelCategoriesSelect($flag->getCategoryId()),
+        $this->genGenerateBatchsSelect($flag->getBatchNumber()),
+        $this->genGenerateLevelCategoriesSelect($flag->getCategoryId()),
       ); // TODO: Combine Awaits
       $adminsections->appendChild(
         <section class="validate-form admin-box section-locked">
@@ -2832,8 +2827,7 @@ class AdminController extends Controller {
       $level_categories_select,
       $filter_categories_select,
     ) = await \HH\Asio\va(
-      //$this->genGenerateBatchsSelect('0'),
-      $this->genGenerateCountriesSelect(0),
+      $this->genGenerateBatchsSelect('0'),
       $this->genGenerateLevelCategoriesSelect(0),
       $this->genGenerateFilterCategoriesSelect(),
     );
@@ -3173,8 +3167,7 @@ class AdminController extends Controller {
         $l_c++;
       }
       list($countries_select, $level_categories_select) = await \HH\Asio\va(
-        $this->genGenerateCountriesSelect($base->getEntityId()),
-        //$this->genGenerateBatchsSelect($base->getBatchNumber()),
+        $this->genGenerateBatchsSelect($base->getBatchNumber()),
         $this->genGenerateLevelCategoriesSelect($base->getCategoryId()),
       ); // TODO: Combine Awaits
       $adminsections->appendChild(
@@ -3887,143 +3880,161 @@ class AdminController extends Controller {
 
       if ($team_protected) {
         $toggle_status =
-          <div class="admin-section-toggle radio-inline">
-            <input
-              type="radio"
-              name={$team_status_name}
-              id={$team_status_on_id}
-              checked={$team_active_on}
-            />
-            <label for={$team_status_on_id}>{tr('On')}</label>
-          </div>;
-        $toggle_admin =
-          <div class="admin-section-toggle radio-inline">
-            <input
-              type="radio"
-              name={$team_admin_name}
-              id={$team_admin_on_id}
-              checked={$team_admin_on}
-            />
-            <label for={$team_admin_on_id}>{tr('On')}</label>
-          </div>;
-        $delete_button =
-          <button class="fb-cta cta--red" disabled={true}>
-            {tr('Protected')}
-          </button>;
-      } else {
-        $toggle_status =
-          <div class="admin-section-toggle radio-inline">
-            <input
-              type="radio"
-              name={$team_status_name}
-              id={$team_status_on_id}
-              checked={$team_active_on}
-            />
-            <label for={$team_status_on_id}>{tr('On')}</label>
-            <input
-              type="radio"
-              name={$team_status_name}
-              id={$team_status_off_id}
-              checked={$team_active_off}
-            />
-            <label for={$team_status_off_id}>{tr('Off')}</label>
-          </div>;
-        $toggle_admin =
-          <div class="admin-section-toggle radio-inline">
-            <input
-              type="radio"
-              name={$team_admin_name}
-              id={$team_admin_on_id}
-              checked={$team_admin_on}
-            />
-            <label for={$team_admin_on_id}>{tr('On')}</label>
-            <input
-              type="radio"
-              name={$team_admin_name}
-              id={$team_admin_off_id}
-              checked={$team_admin_off}
-            />
-            <label for={$team_admin_off_id}>{tr('Off')}</label>
-          </div>;
-        $delete_button =
-          <div style="display: inline">
-            <input type="hidden" name="team_id" value={$team_id} />
-            <a
-              href="#"
-              class="fb-cta cta--red js-delete-team"
-              style="margin-right: 20px">
-              {tr('Delete')}
-            </a>
-          </div>;
-      }
+  <div class="admin-section-toggle radio-inline">
+    <input
+      type="radio"
+      name={$team_status_name}
+      id={$team_status_on_id}
+      checked={$team_active_on}
+    />
+    <label for={$team_status_on_id}>{tr('On')}</label>
+  </div>;
+$toggle_admin =
+  <div class="admin-section-toggle radio-inline">
+    <input
+      type="radio"
+      name={$team_admin_name}
+      id={$team_admin_on_id}
+      checked={$team_admin_on}
+    />
+    <label for={$team_admin_on_id}>{tr('On')}</label>
+  </div>;
+$delete_button =
+  <button class="fb-cta cta--red" disabled={true}>
+    {tr('Protected')}
+  </button>;
+} else {
+$toggle_status =
+  <div class="admin-section-toggle radio-inline">
+    <input
+      type="radio"
+      name={$team_status_name}
+      id={$team_status_on_id}
+      checked={$team_active_on}
+    />
+    <label for={$team_status_on_id}>{tr('On')}</label>
+    <input
+      type="radio"
+      name={$team_status_name}
+      id={$team_status_off_id}
+      checked={$team_active_off}
+    />
+    <label for={$team_status_off_id}>{tr('Off')}</label>
+  </div>;
+$toggle_admin =
+  <div class="admin-section-toggle radio-inline">
+    <input
+      type="radio"
+      name={$team_admin_name}
+      id={$team_admin_on_id}
+      checked={$team_admin_on}
+    />
+    <label for={$team_admin_on_id}>{tr('On')}</label>
+    <input
+      type="radio"
+      name={$team_admin_name}
+      id={$team_admin_off_id}
+      checked={$team_admin_off}
+    />
+    <label for={$team_admin_off_id}>{tr('Off')}</label>
+  </div>;
+$delete_button =
+  <div style="display: inline">
+    <input type="hidden" name="team_id" value={$team_id} />
+    <a
+      href="#"
+      class="fb-cta cta--red js-delete-team"
+      style="margin-right: 20px">
+      {tr('Delete')}
+    </a>
+  </div>;
+}
 
-      $tab_team = 'team'.strval($team->getId());
-      $tab_names = 'names'.strval($team->getId());
-      $tab_scores = 'scores'.strval($team->getId());
-      $tab_failures = 'failures'.strval($team->getId());
+$tab_team = 'team'.strval($team->getId());
+$tab_names = 'names'.strval($team->getId());
+$tab_scores = 'scores'.strval($team->getId());
+$tab_failures = 'failures'.strval($team->getId());
 
-      $awaitables = Map {
-        'team_tabs' => $this->genGenerateTeamTabs($team->getId()),
-        'team_names' => $this->genGenerateTeamNames($team->getId()),
-        'team_scores' => $this->genGenerateTeamScores($team->getId()),
-        'team_failures' => $this->genGenerateTeamFailures($team->getId()),
-      };
+$awaitables = Map {
+'team_tabs' => $this->genGenerateTeamTabs($team->getId()),
+'team_names' => $this->genGenerateTeamNames($team->getId()),
+'team_scores' => $this->genGenerateTeamScores($team->getId()),
+'team_failures' => $this->genGenerateTeamFailures($team->getId()),
+};
 
-      $results = await \HH\Asio\m($awaitables); // TODO: Combine Awaits
+$results = await \HH\Asio\m($awaitables); // TODO: Combine Awaits
 
-      $team_tabs = $results['team_tabs'];
-      $team_names = $results['team_names'];
-      $team_scores = $results['team_scores'];
-      $team_failures = $results['team_failures'];
+$team_tabs = $results['team_tabs'];
+$team_names = $results['team_names'];
+$team_scores = $results['team_scores'];
+$team_failures = $results['team_failures'];
+$score_log=await Team::getTeamsBaselog($team->getId());
+$batch_div=<ol> </ol>;
+if($score_log){
+  foreach ($score_log as $log){ 
+    $batch_div->appendChild(
 
-      $adminsections->appendChild(
-        <div>
-          {$team_tabs}
-          <div class="tab-content-container">
-            <div class="radio-tab-content active" data-tab={$tab_team}>
-              <section class="admin-box validate-form section-locked">
-                <form class="team_form" name={strval($team->getId())}>
-                  <input
-                    type="hidden"
-                    name="team_id"
-                    value={strval($team->getId())}
-                  />
-                  <header class="admin-box-header">
-                    <h3>{tr('Team')} {$c}</h3>
-                   <!-- {$toggle_status}-->
-                  </header>
-                  <div class="fb-column-container">
-                    <div class="col col-pad col-1-3">
-                      <div
-                        class=
-                          "form-el form-el--required el--block-label el--full-text">
-                        <label class="admin-label" for="">
-                          {tr('Team Name')}
-                        </label>
-                        <input
-                          name="team_name"
-                          type="text"
-                          value={$team->getName()}
-                          maxlength={20}
-                          disabled={true}
-                        />
-                      </div>
-                      <div
-                        class=
-                          "form-el form-el--required el--block-label el--full-text">
-                        <label class="admin-label" for="">
-                          {tr('Score')}
-                        </label>
-                        <input
-                          name="points"
-                          type="text"
-                          value={strval($team->getPoints())}
-                          disabled={true}
-                        />
-                      </div>
-                    </div>
-                    <div class="col col-pad col-1-3">
-                       <!--
+                         <li><a href="">{$log['batch_number']}</a></li>,
+   );
+  }
+}
+
+          
+$adminsections->appendChild(
+<div>
+  {$team_tabs}
+  <div class="tab-content-container">
+    <div class="radio-tab-content active" data-tab={$tab_team}>
+      <section class="admin-box validate-form section-locked">
+	<form class="team_form" name={strval($team->getId())}>
+	  <input
+	    type="hidden"
+	    name="team_id"
+	    value={strval($team->getId())}
+	  />
+	  <header class="admin-box-header">
+	    <h3>{tr('Team')} {$c}</h3>
+	   <!-- {$toggle_status}-->
+	  </header>
+	  <div class="fb-column-container">
+	    <div class="col col-pad col-1-3">
+	      <div
+		class=
+		  "form-el form-el--required el--block-label el--full-text">
+		<label class="admin-label" for="">
+		  {tr('Team Name')}
+		</label>
+		<input
+		  name="team_name"
+		  type="text"
+		  value={$team->getName()}
+		  maxlength={20}
+		  disabled={true}
+		/>
+	      </div>
+	     <!-- <div
+		class=
+		  "form-el form-el--required el--block-label el--full-text">
+		<label class="admin-label" for="">
+		  {tr('Score')}
+		</label>
+		<input
+		  name="points"
+		  type="text"
+		  value={strval($team->getPoints())}
+		  disabled={true}
+		/>
+	      </div>-->
+	    </div>
+	    <div class="col col-pad col-1-3">
+	      <div class="form-el el--block-label el--full-text">
+		<label class="admin-label" for="">
+		  {tr('Batch')}
+		</label>
+                {$batch_div}
+               
+                      </div>  
+                     <!--
                        <div class="form-el el--block-label el--full-text">
                         <label class="admin-label" for="">
                           {tr('Change Password')}
