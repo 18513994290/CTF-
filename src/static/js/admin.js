@@ -774,6 +774,7 @@ function updateQuizLevel(section) {
   var question = $('.level_form textarea[name=question]', section)[0].value;
   var answer = $('.level_form input[name=answer]', section)[0].value;
   var entity_id = $('.level_form select[name=entity_id] option:selected', section)[0].value;
+  var category_id = $('.level_form select[name=category_id] option:selected', section)[0].value;
   var points = $('.level_form input[name=points]', section)[0].value;
   var bonus = $('.level_form input[name=bonus]', section)[0].value;
   var bonus_dec = $('.level_form input[name=bonus_dec]', section)[0].value;
@@ -787,6 +788,7 @@ function updateQuizLevel(section) {
     question: question,
     answer: answer,
     entity_id: entity_id,
+    category_id: category_id,
     points: points,
     bonus: bonus,
     bonus_dec: bonus_dec,

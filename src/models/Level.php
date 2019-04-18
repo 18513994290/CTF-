@@ -438,6 +438,7 @@ class Level extends Model implements Importable, Exportable {
     string $question,
     string $answer,
     int $entity_id,
+    int $category_id,
     //int $points,
     int $bonus,
     //int $bonus_dec,
@@ -449,7 +450,7 @@ class Level extends Model implements Importable, Exportable {
       'SELECT id FROM categories WHERE category = %s LIMIT 1',
       'Quiz',
     );
-    $category_id = intval(must_have_idx($result->mapRows()[0], 'id'));
+    //$category_id = intval(must_have_idx($result->mapRows()[0], 'id'));
     return await self::genCreate(
       'quiz',
       $title,
@@ -473,6 +474,7 @@ class Level extends Model implements Importable, Exportable {
     string $question,
     string $answer,
     int $entity_id,
+    int $category_id,
     //int $points,
     int $bonus,
     //int $bonus_dec,
@@ -485,7 +487,10 @@ class Level extends Model implements Importable, Exportable {
       'SELECT id FROM categories WHERE category = %s LIMIT 1',
       'Quiz',
     );
-    $category_id = intval(must_have_idx($result->mapRows()[0], 'id'));
+    //$category_id = intval(must_have_idx($result->mapRows()[0], 'id'));
+    //$file="/var/www/fbctf/src/log.txt";
+    //$errorMsg=$category_id;
+    //file_put_contents($file,$errorMsg.PHP_EOL, FILE_APPEND);
     await self::genUpdate(
       $title,
       $question,

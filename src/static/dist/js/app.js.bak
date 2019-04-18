@@ -21383,16 +21383,15 @@ function resetDatabase() {
 function sendAdminRequest(request_data, refresh_page) {
   var csrf_token = $('input[name=csrf_token]')[0].value;
 
-    console.log(request_data);
   request_data.csrf_token = csrf_token;
   $.post('index.php?p=admin&ajax=true', request_data).fail(function () {
     // TODO: Make this a modal
     console.log('ERROR');
+    console.log(request_data);
   }).done(function (data) {
     var responseData = JSON.parse(data);
     if (responseData.result == 'OK') {
       console.log('OK');
-     console.log(data)
       if (refresh_page) {
         window.location.reload(true);
       }
@@ -22057,8 +22056,8 @@ function createQuizLevel(section) {
     question: question,
     answer: answer,
     entity_id: entity_id,
-    category_id: category_id,
     //points: points,
+    category_id:category_id,
     hint: hint,
     penalty: penalty
   };
@@ -22155,8 +22154,8 @@ function updateQuizLevel(section) {
     question: question,
     answer: answer,
     entity_id: entity_id,
+    category_id: category_id,
    // points: points,
-   category_id:category_id,
     bonus: bonus,
    // bonus_dec: bonus_dec,
     hint: hint,

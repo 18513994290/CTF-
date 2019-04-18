@@ -581,11 +581,55 @@ class Attachment extends Model {
  //limit 1
  public static async function genAllAvailableBatchs() {
    $db = await self::genDb();
-   $result = await $db->queryf('SELECT batch_number FROM batchs where enabled = 0 AND start_ts <  now()');
+   $result = await $db->queryf('SELECT id,batch_number FROM batchs where enabled = 0 AND start_ts <  now()');
    $all_batchs=$result->mapRows();
    return $all_batchs;
  }
- 	
+ //查询倒计时可用的批次
+public static async function genBatchTime() {  	
+   $db = await self::genDb();
+   $result = await $db->queryf('SELECT start_ts,end_ts  FROM batchs where enabled = 0 AND start_ts <=  now() order by start_ts asc limit 1');
+   $batchs=$result->mapRows();
+   return $batchs;
+}
+
+
+public static async function timediff( $begin_time, $end_time )
+{
+    if ( $begin_time < $end_time ) {
+        $starttime = $begin_time;
+        $endtime = $end_time;
+    } else {
+        $starttime = $end_time;
+        $endtime = $begin_time;
+    }
+    $timediff = $endtime - $starttime;
+    $days = intval( $timediff / 86400 );
+    $remain = $timediff % 86400;
+    $hours = intval( $remain / 3600 );
+    $remain = $remain % 3600;
+    $mins = intval( $remain / 60 );
+    $secs = $remain % 60;
+    $res = array( "day" => $days, "hour" => $hours, "min" => $mins, "sec" => $secs );
+    return $res;
+}
+
+ //根据ID获取batch
+  public static async function genBatch($batch_id){	
+   $db = await self::genDb();
+   $result = await $db->queryf('SELECT *  FROM batchs  where id = %d',$batch_id,);
+   $batchs=$result->mapRows();
+   return $batchs;
+ }
+  //根据Batch获取ID
+  public static async function genBatchID($batch_number){
+   $db = await self::genDb();
+   $result = await $db->queryf('SELECT *  FROM batchs  where batch_number = %s ORDER BY create_ts DESC',$batch_number,);
+   $batchs=$result->mapRows();
+   return $batchs;
+ }
+
+
 
 
 }
